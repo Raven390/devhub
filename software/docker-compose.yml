@@ -43,7 +43,18 @@ services:
       - './keyckloak_data:/opt/bitnami/keycloak/data'
     networks:
       - software
-
+  webdav:
+    container_name: web-dav
+    image: bytemark/webdav:latest
+    restart: always
+    environment:
+      AUTH_TYPE: Digest
+      USERNAME: gamehub
+      PASSWORD: 123
+    ports:
+      - "8111:80"
+    volumes:
+      - ./webdav_data:/var/lib/dav
 #  liquibase:
 #    image: liquibase:0.1
 #    container_name: migrations

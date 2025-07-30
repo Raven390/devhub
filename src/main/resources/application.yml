@@ -33,4 +33,6 @@ spring:
       fail-on-unknown-properties: false
   application:
     name: gamehub-web
-
+logging:
+  level:
+    root: debug
