@@ -2,7 +2,7 @@ version: '3.9'
 name: gamehub
 services:
   postgresql:
-    image: docker.io/bitnami/postgresql:latest
+    image: bitnami/postgresql:15.10.0
     container_name: postgresql
     ports:
       - "5435:5432"

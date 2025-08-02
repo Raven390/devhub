@@ -1,5 +1,6 @@
 package ru.gamehub.web.application.project.create;
 
+import org.springframework.stereotype.Service;
 import ru.gamehub.web.application.common.CommandHandler;
 import ru.gamehub.web.domain.project.Project;
 import ru.gamehub.web.domain.project.ProjectRepository;
@@ -11,6 +12,7 @@ import ru.gamehub.web.domain.project.ProjectRepository;
  * Реализация {@link CommandHandler}, позволяющая использовать единый контракт
  * для всех командных операций приложения.
  */
+@Service
 public class CreateProjectService implements CommandHandler<CreateProjectCommand, Project> {
     private final ProjectRepository repository;
 
@@ -26,13 +28,16 @@ public class CreateProjectService implements CommandHandler<CreateProjectCommand
     /**
      * Обрабатывает команду создания проекта.
      *
-     * @param cmd Команда с параметрами нового проекта
+     * @param createProjectCommand Команда с параметрами нового проекта
      * @return Созданный доменный объект проекта
      */
     @Override
-    public Project handle(CreateProjectCommand cmd) {
-        Project project = Project.create(cmd.owner(), cmd.name(), cmd.description());
-        repository.save(project);
-        return project;
+    public Project handle(CreateProjectCommand createProjectCommand) {
+        Project project = Project.create(
+                createProjectCommand.owner(),
+                createProjectCommand.name(),
+                createProjectCommand.description()
+        );
+        return repository.save(project);
     }
 }

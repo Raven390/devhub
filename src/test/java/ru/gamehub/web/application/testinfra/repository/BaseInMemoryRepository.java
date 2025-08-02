@@ -25,8 +25,9 @@ public abstract class BaseInMemoryRepository<T> {
      */
     protected abstract UUID getId(T entity);
 
-    public void save(T entity) {
+    public T save(T entity) {
         store.put(getId(entity), entity);
+        return entity;
     }
 
     public Optional<T> findById(UUID id) {

@@ -17,7 +17,7 @@ public interface ProjectRepository {
      *
      * @param project проект для сохранения
      */
-    void save(Project project);
+    Project save(Project project);
 
     /**
      * Ищет проект по его идентификатору.

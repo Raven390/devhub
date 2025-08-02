@@ -53,6 +53,15 @@ public class Project {
         this.updatedAt = now;
     }
 
+    private Project(UUID id, User owner, String name, String description, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+        this.id = id;
+        this.owner = owner;
+        this.name = name;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     /**
      * Создаёт новый проект с текущим временем создания и модификации.
      *
@@ -63,6 +72,18 @@ public class Project {
      */
     public static Project create(User owner, String name, String description) {
         return new Project(owner, name, description);
+    }
+
+    /**
+     * Доменный объект из переданных параметров
+     *
+     * @param owner Владелец проекта
+     * @param name Название проекта
+     * @param description Описание проекта
+     * @return Новый экземпляр проекта
+     */
+    public static Project create(UUID id, User owner, String name, String description, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+        return new Project(id, owner, name, description, createdAt, updatedAt);
     }
 
     public UUID getId() {
