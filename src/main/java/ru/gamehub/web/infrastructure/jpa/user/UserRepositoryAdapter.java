@@ -63,6 +63,11 @@ public class UserRepositoryAdapter implements UserRepository {
                 .toList();
     }
 
+    @Override
+    public List<User> findAllById(List<UUID> userIdList) {
+        return jpaUserRepository.findAllById(userIdList).stream().map(userJpaMapper::toDomain).toList();
+    }
+
     /**
      * {@inheritDoc}
      */

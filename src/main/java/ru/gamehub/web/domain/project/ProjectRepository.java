@@ -1,6 +1,5 @@
 package ru.gamehub.web.domain.project;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -32,7 +31,7 @@ public interface ProjectRepository {
      *
      * @return список всех проектов
      */
-    List<Project> findAll();
+    ProjectPage findPage(int page, int size);
 
     /**
      * Удаляет проект по его идентификатору.

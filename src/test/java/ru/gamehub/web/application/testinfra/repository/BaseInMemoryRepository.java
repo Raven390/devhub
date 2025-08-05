@@ -3,7 +3,6 @@ package ru.gamehub.web.application.testinfra.repository;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -15,7 +14,7 @@ import java.util.UUID;
  */
 public abstract class BaseInMemoryRepository<T> {
 
-    protected final Map<UUID, T> store = new HashMap<>();
+    protected final HashMap<UUID, T> store = new HashMap<>();
 
     /**
      * Получает ID сущности.
