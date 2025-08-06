@@ -11,7 +11,7 @@ import java.util.UUID;
 /**
  * In-memory реализация {@link ProjectRepository}, основанная на {@link BaseInMemoryRepository}.
  */
-public class InMemoryProjectRepository extends BaseInMemoryRepository<Project> implements ProjectRepository {
+public class InMemoryProjectRepository extends BaseInMemoryRepository<Project, UUID> implements ProjectRepository {
 
     @Override
     protected UUID getId(Project project) {

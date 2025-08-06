@@ -56,7 +56,7 @@ public class ProjectController {
     public ResponseEntity<CreateProjectResponse> create(@AuthenticationPrincipal Jwt principal,
                                                         @RequestBody CreateProjectRequest request) {
         UUID userId = UUID.fromString(principal.getClaim("business_id"));
-        CreateProjectCommand command = projectMapper.toCommand(userId, request);
+        CreateProjectCommand command = projectMapper.toCreateProjectCommand(userId, request);
         Project createdProject = createProjectService.handle(command);
 
         // ProjectDto — ответ клиенту

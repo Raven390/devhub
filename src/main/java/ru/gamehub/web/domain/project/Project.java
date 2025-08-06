@@ -88,78 +88,118 @@ public class Project {
      */
     private final OffsetDateTime updatedAt;
 
-    private Project(User owner, String name, String description, String shortDescription, ProjectType type,
-                    ProjectStatus status, List<Technology> technologies, List<Role> roles, List<ProjectMember> members) {
-        this.shortDescription = shortDescription;
-        this.type = type;
-        this.status = status;
-        this.technologies = technologies;
-        this.roles = roles;
-        this.members = members;
-        this.id = UUID.randomUUID();
-        this.owner = owner;
-        this.name = name;
-        this.description = description;
-
-        OffsetDateTime now = OffsetDateTime.now();
-        this.createdAt = now;
-        this.updatedAt = now;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    private Project(UUID id, User owner, String name, String description, String shortDescription,
-                    ProjectType type, ProjectStatus status, List<Technology> technologies,
-                    List<Role> roles, List<ProjectMember> members,
-                    OffsetDateTime createdAt, OffsetDateTime updatedAt) {
-        this.id = id;
-        this.owner = owner;
-        this.name = name;
-        this.description = description;
-        this.shortDescription = shortDescription;
-        this.type = type;
-        this.status = status;
-        this.technologies = technologies;
-        this.roles = roles;
-        this.members = members;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    private Project(Builder builder) {
+        this.id = builder.id;
+        this.owner = builder.owner;
+        this.name = builder.name;
+        this.description = builder.description;
+        this.shortDescription = builder.shortDescription;
+        this.type = builder.type;
+        this.status = builder.status;
+        this.technologies = builder.technologies;
+        this.roles = builder.roles;
+        this.members = builder.members;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.createdAt;
     }
 
-    /**
-     * Создаёт новый проект с текущим временем создания и модификации.
-     *
-     * @param owner Владелец проекта
-     * @param name Название проекта
-     * @param description Описание проекта
-     * @return Новый экземпляр проекта
-     */
-    public static Project create(User owner, String name, String description, String shortDescription,
-                                 ProjectType type, ProjectStatus status, List<Technology> technologies,
-                                 List<Role> roles, List<ProjectMember> members) {
-        return new Project(owner, name, description, shortDescription,
-                type, status, technologies, roles, members);
-    }
+    public static class Builder {
+        private UUID id;
+        private User owner;
+        private String name;
+        private String description;
+        private String shortDescription;
+        private ProjectType type;
+        private ProjectStatus status;
+        private List<Technology> technologies;
+        private List<Role> roles;
+        private List<ProjectMember> members;
+        private OffsetDateTime createdAt;
+        private OffsetDateTime updatedAt;
 
-    public Project update(String name, String description, String shortDescription, ProjectType type,
-                          ProjectStatus status, List<Technology> technologies,
-                          List<Role> roles, List<ProjectMember> members) {
-        return new Project(this.id, this.owner, name, description, shortDescription,
-                type, status, technologies, roles, members, this.createdAt, this.updatedAt);
-    }
+        /**
+         * Копирует все поля из существующего Project для быстрого клонирования/апдейта.
+         */
+        public Builder from(Project existing) {
+            this.id = existing.getId();
+            this.owner = existing.getOwner();
+            this.name = existing.getName();
+            this.description = existing.getDescription();
+            this.shortDescription = existing.getShortDescription();
+            this.type = existing.getType();
+            this.status = existing.getStatus();
+            this.technologies = existing.getTechnologies();
+            this.roles = existing.getRoles();
+            this.members = existing.getMembers();
+            this.createdAt = existing.getCreatedAt();
+            return this;
+        }
 
-    /**
-     * Доменный объект из переданных параметров
-     *
-     * @param owner Владелец проекта
-     * @param name Название проекта
-     * @param description Описание проекта
-     * @return Новый экземпляр проекта
-     */
-    public static Project create(UUID id, User owner, String name,
-                                 String description, String shortDescription, ProjectType type,
-                                 ProjectStatus status, List<Technology> technologies, List<Role> roles,
-                                 List<ProjectMember> members, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
-        return new Project(id, owner, name, description, shortDescription,
-                type, status, technologies, roles, members, createdAt, updatedAt);
+        public Builder id(UUID id) {
+            this.id = id;
+            return this;
+        }
+        public Builder owner(User owner) {
+            this.owner = owner;
+            return this;
+        }
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+        public Builder shortDescription(String shortDescription) {
+            this.shortDescription = shortDescription;
+            return this;
+        }
+        public Builder type(ProjectType type) {
+            this.type = type;
+            return this;
+        }
+        public Builder status(ProjectStatus status) {
+            this.status = status;
+            return this;
+        }
+        public Builder technologies(List<Technology> technologies) {
+            this.technologies = technologies;
+            return this;
+        }
+        public Builder roles(List<Role> roles) {
+            this.roles = roles;
+            return this;
+        }
+        public Builder members(List<ProjectMember> members) {
+            this.members = members;
+            return this;
+        }
+        public Builder createdAt(OffsetDateTime createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Project build() {
+            // Пример простых доменных инвариантов (можешь расширять)
+            if (id == null) id = UUID.randomUUID();
+            if (owner == null) throw new IllegalArgumentException("Owner is required");
+            if (name == null || name.isBlank()) throw new IllegalArgumentException("Name is required");
+            if (createdAt == null && updatedAt == null) {
+                createdAt = OffsetDateTime.now();
+                updatedAt = createdAt;
+            }
+
+            if (updatedAt == null) {
+                updatedAt = OffsetDateTime.now();
+            }
+
+            return new Project(this);
+        }
     }
 
     public UUID getId() {

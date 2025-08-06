@@ -25,4 +25,11 @@ public class ProjectTypeRepositoryAdapter implements ProjectTypeRepository {
                 .orElseThrow(() -> new ProjectTypeNotFoundException(id)));
         return Optional.of(projectType);
     }
+
+    @Override
+    public ProjectType save(ProjectType projectType) {
+        var entity = mapper.toEntity(projectType);
+        var saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
+    }
 }

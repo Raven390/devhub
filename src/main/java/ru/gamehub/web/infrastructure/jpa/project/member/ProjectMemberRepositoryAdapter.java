@@ -1,6 +1,7 @@
 package ru.gamehub.web.infrastructure.jpa.project.member;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.gamehub.web.domain.project.member.ProjectMember;
 import ru.gamehub.web.domain.project.member.ProjectMemberRepository;
 import ru.gamehub.web.infrastructure.jpa.project.member.mapper.ProjectMemberJpaMapper;
@@ -30,6 +31,14 @@ public class ProjectMemberRepositoryAdapter implements ProjectMemberRepository {
         return jpaRepository.findAllByUserIdIn(userId).stream()
                 .map(mapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public ProjectMember save(ProjectMember projectMember) {
+        var entity = mapper.toEntity(projectMember);
+        var saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
     }
 
 }

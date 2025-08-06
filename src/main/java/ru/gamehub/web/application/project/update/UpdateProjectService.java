@@ -2,6 +2,7 @@ package ru.gamehub.web.application.project.update;
 
 import org.springframework.stereotype.Service;
 import ru.gamehub.web.application.common.CommandHandler;
+import ru.gamehub.web.application.project.ProjectAggregateAssembler;
 import ru.gamehub.web.domain.project.Project;
 import ru.gamehub.web.domain.project.ProjectRepository;
 import ru.gamehub.web.domain.project.exception.ProjectAccessDeniedException;
@@ -36,39 +37,26 @@ import java.util.UUID;
 @Service
 public class UpdateProjectService implements CommandHandler<UpdateProjectCommand, Project> {
     private final ProjectRepository projectRepository;
+    private final ProjectAggregateAssembler assembler;
 
-    public UpdateProjectService(ProjectRepository projectRepository) {
+    public UpdateProjectService(ProjectRepository projectRepository, ProjectAggregateAssembler assembler) {
         this.projectRepository = projectRepository;
+        this.assembler = assembler;
     }
 
-
-    /**
-     * Обрабатывает команду обновления проекта.
-     * <p>
-     * 1. Проверяет наличие проекта.<br>
-     * 2. Проверяет права пользователя.<br>
-     * 3. Обновляет и сохраняет проект.
-     * </p>
-     *
-     * @param command команда с новыми параметрами проекта и id инициатора.
-     * @return обновлённый {@link Project}
-     * @throws ru.gamehub.web.domain.project.exception.ProjectNotFoundException если проект не найден.
-     * @throws ru.gamehub.web.domain.project.exception.ProjectAccessDeniedException если инициатор не владелец.
-     */
     @Override
     public Project handle(UpdateProjectCommand command) {
-        Project project = projectRepository.findById(command.projectId())
+        Project existing = projectRepository.findById(command.projectId())
                 .orElseThrow(() -> new ProjectNotFoundException(command.projectId()));
-        // Проверка, что обновляет владелец
-        UUID ownerId = project.getOwner().getId();
+
+        UUID ownerId = existing.getOwner().getId();
         if (!ownerId.equals(command.ownerId())) {
             throw new ProjectAccessDeniedException(ownerId, command.ownerId());
         }
 
-        // TODO
-/*        projectRepository.save(updated);
-        return updated;*/
-        return project;
+        Project updated = assembler.updateAggregate(existing, command);
+        return projectRepository.save(updated);
     }
 }
+
 

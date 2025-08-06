@@ -6,4 +6,5 @@ import java.util.UUID;
 public interface ProjectTypeRepository {
 
     Optional<ProjectType> findById(UUID id);
+    ProjectType save(ProjectType projectType);
 }

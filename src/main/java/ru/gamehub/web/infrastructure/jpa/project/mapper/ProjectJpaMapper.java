@@ -71,17 +71,18 @@ public interface ProjectJpaMapper {
         List<Role> roleList = entity.getRoles().stream().map(ROLE_JPA_MAPPER::toDomain).toList();
         List<ProjectMember> projectMemberList = PROJECT_MEMBER_JPA_MAPPER.toDomainList(entity.getMembers());
 
-        return Project.create(
-                owner,
-                entity.getName(),
-                entity.getDescription(),
-                entity.getShortDescription(),
-                projectType,
-                projectStatus,
-                technology,
-                roleList,
-                projectMemberList
-        );
+        return Project.builder()
+                .id(entity.getId())
+                .owner(owner)
+                .name(entity.getName())
+                .description(entity.getDescription())
+                .shortDescription(entity.getShortDescription())
+                .type(projectType)
+                .status(projectStatus)
+                .technologies(technology)
+                .roles(roleList)
+                .members(projectMemberList)
+                .build();
     }
 
     UserJpaMapper USER_JPA_MAPPER = Mappers.getMapper(UserJpaMapper.class);

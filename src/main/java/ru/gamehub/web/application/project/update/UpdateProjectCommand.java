@@ -2,6 +2,8 @@ package ru.gamehub.web.application.project.update;
 
 import ru.gamehub.web.application.common.Command;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -45,5 +47,14 @@ public record UpdateProjectCommand(
         UUID projectId,
         UUID ownerId,
         String name,
-        String description
-) implements Command {}
+        String description,
+        String shortDescription,
+        String status,
+        UUID typeId,
+        List<Integer> technologyIds,
+        List<Integer> roleIds,
+        List<Member> members
+) implements Command {
+    public record Member(UUID userId, Integer roleId, OffsetDateTime joinedAt) {}
+
+}

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Универсальный in-memory репозиторий для тестов.
@@ -12,9 +11,9 @@ import java.util.UUID;
  *
  * @param <T> Тип сущности
  */
-public abstract class BaseInMemoryRepository<T> {
+public abstract class BaseInMemoryRepository<T, I> {
 
-    protected final HashMap<UUID, T> store = new HashMap<>();
+    protected final HashMap<I, T> store = new HashMap<>();
 
     /**
      * Получает ID сущности.
@@ -22,14 +21,14 @@ public abstract class BaseInMemoryRepository<T> {
      * @param entity сущность
      * @return UUID идентификатор
      */
-    protected abstract UUID getId(T entity);
+    protected abstract I getId(T entity);
 
     public T save(T entity) {
         store.put(getId(entity), entity);
         return entity;
     }
 
-    public Optional<T> findById(UUID id) {
+    public Optional<T> findById(I id) {
         return Optional.ofNullable(store.get(id));
     }
 
@@ -37,7 +36,7 @@ public abstract class BaseInMemoryRepository<T> {
         return new ArrayList<>(store.values());
     }
 
-    public void delete(UUID id) {
+    public void delete(I id) {
         store.remove(id);
     }
 

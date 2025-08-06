@@ -87,7 +87,7 @@ public class ProjectRepositoryAdapter implements ProjectRepository {
         entity.setRoles(roles);
         entity.setTechnologies(technologies);
 
-        entity = jpaRepository.save(entity);
+        jpaRepository.save(entity);
         return project;
     }
 

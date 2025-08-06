@@ -6,12 +6,12 @@ public class ProjectType {
     private final UUID id;
     private final String name;
 
-    public ProjectType(UUID id, String name) {
+    private ProjectType(UUID id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public ProjectType create(UUID id, String name) {
+    public static ProjectType create(UUID id, String name) {
         return new ProjectType(id, name);
     }
 

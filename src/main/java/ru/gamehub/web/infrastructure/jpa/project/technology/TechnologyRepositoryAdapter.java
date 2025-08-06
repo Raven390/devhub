@@ -21,4 +21,11 @@ public class TechnologyRepositoryAdapter implements TechnologyRepository {
     public List<Technology> findAllById(List<Integer> idList) {
         return jpaRepository.findAllById(idList).stream().map(mapper::toDomain).toList();
     }
+
+    @Override
+    public Technology save(Technology technology) {
+        var entity = mapper.toEntity(technology);
+        var saved = jpaRepository.save(entity);
+        return mapper.toDomain(saved);
+    }
 }

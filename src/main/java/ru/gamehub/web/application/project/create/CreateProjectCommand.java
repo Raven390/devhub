@@ -41,5 +41,5 @@ public record CreateProjectCommand(
         String status,
         List<Integer> technologyIds,
         List<Integer> roleIds,
-        List<UUID> memberIds
+        List<UUID> members
 ) implements Command {}

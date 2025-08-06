@@ -22,5 +22,5 @@ public record CreateProjectRequest(
         String status,
         List<Integer> technologyIds,
         List<Integer> roleIds,
-        List<UUID> memberIds // Может быть пустым, если участников нет на старте
+        List<UUID> members // Может быть пустым, если участников нет на старте
 ) {}

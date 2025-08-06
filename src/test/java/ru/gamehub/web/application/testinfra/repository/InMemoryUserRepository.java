@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class InMemoryUserRepository extends BaseInMemoryRepository<User> implements UserRepository {
+public class InMemoryUserRepository extends BaseInMemoryRepository<User, UUID> implements UserRepository {
     @Override
     protected UUID getId(User entity) {
         return entity.getId();

@@ -6,4 +6,5 @@ import java.util.UUID;
 public interface ProjectMemberRepository {
     List<ProjectMember> findAllByProjectId(UUID projectId);
     List<ProjectMember> findAllByUserIds(List<UUID> userId);
+    ProjectMember save(ProjectMember projectMember);
 }
