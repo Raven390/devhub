@@ -5,108 +5,78 @@ CREATE SCHEMA keycloak;
 ALTER SCHEMA keycloak OWNER TO postgres;
 
 
-CREATE TYPE gamehub.account_status AS ENUM (
-    'ACTIVE',
-    'INACTIVE',
-    'SUSPENDED'
-    );
+-- Enum-тип для статуса проекта
+CREATE TYPE project_status AS ENUM ('draft', 'active', 'recruiting', 'archived');
 
-CREATE TABLE gamehub.skill
+-- Роли в проекте (многие-ко-многим)
+CREATE TABLE project_type
 (
-    id         uuid PRIMARY KEY,
-    skill_name VARCHAR(100) NOT NULL
+    id   uuid PRIMARY KEY,
+    name VARCHAR(64) NOT NULL UNIQUE
 );
 
-CREATE TABLE gamehub.users
+-- Основная таблица проектов
+CREATE TABLE project
 (
-    id              uuid PRIMARY KEY,
-    nickname        VARCHAR(30)            NOT NULL,
-    email           VARCHAR(255)           NOT NULL UNIQUE,
-    last_login_date TIMESTAMP WITH TIME ZONE,
-    online          BOOLEAN                NOT NULL,
-    account_status  gamehub.account_status NOT NULL DEFAULT 'ACTIVE'::gamehub.account_status
+    id                uuid PRIMARY KEY,
+    owner_id          uuid                     NOT NULL REFERENCES users (id),
+    name              VARCHAR(128)             NOT NULL,
+    short_description VARCHAR(300)             NOT NULL,
+    description       VARCHAR(3000),
+    type_id           uuid                     NOT NULL REFERENCES project_type (id),
+    status            project_status           NOT NULL,
+    created_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at        TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE gamehub.user_skills
+-- Технологии проекта (многие-ко-многим)
+CREATE TABLE technology
 (
-    user_id  uuid,
-    skill_id uuid,
-    PRIMARY KEY (user_id, skill_id),
-    FOREIGN KEY (user_id) REFERENCES gamehub.users (id),
-    FOREIGN KEY (skill_id) REFERENCES gamehub.skill (id)
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL UNIQUE
 );
 
-INSERT INTO gamehub.users (id, nickname, email, last_login_date, online, "account_status")
-VALUES ('54439de5-67c5-4f4f-9c08-23066ae0dd41'::uuid, 'user', 'user@mail.ru', NULL, FALSE,
-        'ACTIVE'::gamehub.account_status);
-
-CREATE TYPE gamehub.project_status AS ENUM (
-    'NEW',
-    'ACTIVE',
-    'INACTIVE',
-    'CANCELED'
-    );
-
-CREATE TABLE gamehub.project
+CREATE TABLE project_technology
 (
-    description VARCHAR(700)                         NOT NULL,
-    id          uuid,
-    name        VARCHAR(200)                         NOT NULL,
-    status      gamehub.project_status DEFAULT 'NEW',
-    start_date  timestamptz            DEFAULT NOW() NOT NULL,
-    end_date    timestamptz,
-    creator_id  uuid                                 NOT NULL,
-    CONSTRAINT id
-        PRIMARY KEY (id),
-    CONSTRAINT project_users_id_fk
-        FOREIGN KEY (creator_id) REFERENCES gamehub.users
-            ON DELETE CASCADE
+    project_id    uuid    NOT NULL REFERENCES project (id) ON DELETE CASCADE,
+    technology_id INTEGER NOT NULL REFERENCES technology (id) ON DELETE CASCADE,
+    PRIMARY KEY (project_id, technology_id)
 );
 
-COMMENT ON TABLE gamehub.project IS 'Таблица содержит информацию о созданных проектах';
+-- Роли в проекте (многие-ко-многим)
+CREATE TABLE role
+(
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL UNIQUE
+);
 
-COMMENT ON COLUMN gamehub.project.description IS 'Краткое описание проекта';
 
-COMMENT ON COLUMN gamehub.project.id IS 'ID проекта';
 
-COMMENT ON COLUMN gamehub.project.name IS 'Наименование проекта';
+CREATE TABLE project_role
+(
+    project_id uuid    NOT NULL REFERENCES project (id) ON DELETE CASCADE,
+    role_id    INTEGER NOT NULL REFERENCES role (id) ON DELETE CASCADE,
+    PRIMARY KEY (project_id, role_id)
+);
 
-COMMENT ON COLUMN gamehub.project.status IS 'Статус проекта';
+-- Таблица для участников проекта (если потребуется)
+CREATE TABLE project_member
+(
+    project_id uuid                     NOT NULL REFERENCES project (id) ON DELETE CASCADE,
+    user_id    uuid                     NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    joined_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    role_id    INTEGER REFERENCES role (id),
+    PRIMARY KEY (project_id, user_id)
+);
 
-COMMENT ON COLUMN gamehub.project.start_date IS 'Дата начала проекта';
+-- Индексы для ускорения поиска (по необходимости)
+CREATE INDEX idx_project_status ON project (status);
+CREATE INDEX idx_project_owner_id ON project (owner_id);
+CREATE INDEX idx_project_created_at ON project (created_at);
 
-COMMENT ON COLUMN gamehub.project.end_date IS 'Дата завершения проекта';
+-- (Опционально) для поиска по имени/описанию
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-COMMENT ON COLUMN gamehub.project.creator_id IS 'Ссылка на пользователя, создавшего проект';
-
-COMMENT ON CONSTRAINT id ON gamehub.project IS 'ID проекта';
-
-CREATE INDEX project_creator_id_index
-    ON gamehub.project (creator_id);
-
-CREATE INDEX project_end_date_index
-    ON gamehub.project (end_date);
-
-CREATE INDEX project_end_date_start_date_index
-    ON gamehub.project (end_date, start_date);
-
-CREATE INDEX project_start_date_index
-    ON gamehub.project (start_date);
-
-INSERT INTO gamehub.users (id, nickname, email, online, account_status)
-VALUES ('5d6c87f4-4eab-4f03-986e-914895fe94ab'::uuid, 'test', 'test@test.com', FALSE, 'ACTIVE'::gamehub.account_status);
-
-alter table gamehub.project
-    drop constraint project_users_id_fk;
-
-ALTER TABLE gamehub.project
-    ALTER COLUMN creator_id TYPE VARCHAR(255);
-
-alter table gamehub.project
-    add constraint project_user_entity_id_fk
-        foreign key (creator_id) references keycloak.user_entity(id)
-            on delete cascade;
-
-alter table gamehub.project
-    alter column start_date drop not null;
+CREATE INDEX idx_project_name_trgm ON project USING gin (name gin_trgm_ops);
+CREATE INDEX idx_project_short_description_trgm ON project USING gin (short_description gin_trgm_ops);
 
