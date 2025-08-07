@@ -1,6 +1,6 @@
 package ru.gamehub.web.domain.project.member;
 
-import ru.gamehub.web.domain.project.role.Role;
+import ru.gamehub.web.domain.reference.project.role.Role;
 import ru.gamehub.web.domain.user.User;
 
 import java.time.OffsetDateTime;

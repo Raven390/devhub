@@ -6,9 +6,9 @@ import ru.gamehub.web.application.project.create.CreateProjectCommand;
 import ru.gamehub.web.application.project.update.UpdateProjectCommand;
 import ru.gamehub.web.domain.project.Project;
 import ru.gamehub.web.domain.project.ProjectPage;
-import ru.gamehub.web.domain.project.role.Role;
-import ru.gamehub.web.domain.project.technology.Technology;
-import ru.gamehub.web.domain.project.type.ProjectType;
+import ru.gamehub.web.domain.reference.project.role.Role;
+import ru.gamehub.web.domain.reference.project.technology.Technology;
+import ru.gamehub.web.domain.reference.project.type.ProjectType;
 import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.web.project.dto.request.CreateProjectRequest;
 import ru.gamehub.web.web.project.dto.request.MemberDto;
@@ -79,6 +79,7 @@ public interface ProjectMapper {
     @Mapping(source = "type.name", target = "typeName")
     @Mapping(source = "status", target = "status")
     @Mapping(target = "technologyNames", expression = "java(project.getTechnologies().stream().map(Technology::getName).toList())")
+    @Mapping(target = "roleNames", expression = "java(project.getRoles().stream().map(Role::getName).toList())")
     @Mapping(target = "membersCount", expression = "java(project.getMembers() == null ? 0 : project.getMembers().size())")
     @Mapping(source = "createdAt", target = "createdAt")
     ProjectListItemDto toProjectListItemDto(Project project);

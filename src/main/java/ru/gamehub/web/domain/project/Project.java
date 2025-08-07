@@ -1,9 +1,9 @@
 package ru.gamehub.web.domain.project;
 
 import ru.gamehub.web.domain.project.member.ProjectMember;
-import ru.gamehub.web.domain.project.role.Role;
-import ru.gamehub.web.domain.project.technology.Technology;
-import ru.gamehub.web.domain.project.type.ProjectType;
+import ru.gamehub.web.domain.reference.project.role.Role;
+import ru.gamehub.web.domain.reference.project.technology.Technology;
+import ru.gamehub.web.domain.reference.project.type.ProjectType;
 import ru.gamehub.web.domain.user.User;
 
 import java.time.OffsetDateTime;

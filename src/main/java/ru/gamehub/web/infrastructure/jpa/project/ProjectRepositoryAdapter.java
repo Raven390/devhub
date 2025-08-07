@@ -10,8 +10,8 @@ import ru.gamehub.web.infrastructure.jpa.project.mapper.ProjectJpaMapper;
 import ru.gamehub.web.infrastructure.jpa.project.member.ProjectMemberJpaEntity;
 import ru.gamehub.web.infrastructure.jpa.project.member.ProjectMemberJpaId;
 import ru.gamehub.web.infrastructure.jpa.project.model.ProjectJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.role.RoleJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.technology.TechnologyJpaEntity;
+import ru.gamehub.web.infrastructure.jpa.reference.project.role.RoleJpaEntity;
+import ru.gamehub.web.infrastructure.jpa.reference.project.technology.TechnologyJpaEntity;
 
 import java.util.List;
 import java.util.Optional;

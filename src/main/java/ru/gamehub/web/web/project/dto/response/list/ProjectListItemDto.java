@@ -17,6 +17,7 @@ public record ProjectListItemDto(
         String typeName,
         String status,
         List<String> technologyNames,
+        List<String> roleNames,
         int membersCount,
         OffsetDateTime createdAt
 ) {}

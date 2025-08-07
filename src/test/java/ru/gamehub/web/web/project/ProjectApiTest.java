@@ -19,7 +19,7 @@ import ru.gamehub.web.application.testinfra.repository.InMemoryProjectTypeReposi
 import ru.gamehub.web.application.testinfra.repository.InMemoryRoleRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryTechnologyRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryUserRepository;
-import ru.gamehub.web.domain.project.type.ProjectType;
+import ru.gamehub.web.domain.reference.project.type.ProjectType;
 import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.infrastructure.security.config.SecurityConfig;
 import ru.gamehub.web.web.project.dto.request.CreateProjectRequest;

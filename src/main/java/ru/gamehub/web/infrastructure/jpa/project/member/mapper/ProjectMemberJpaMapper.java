@@ -4,10 +4,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.factory.Mappers;
 import ru.gamehub.web.domain.project.member.ProjectMember;
-import ru.gamehub.web.domain.project.role.Role;
+import ru.gamehub.web.domain.reference.project.role.Role;
 import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.infrastructure.jpa.project.member.ProjectMemberJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.role.mapper.RoleJpaMapper;
+import ru.gamehub.web.infrastructure.jpa.reference.project.role.mapper.RoleJpaMapper;
 import ru.gamehub.web.infrastructure.jpa.user.UserJpaMapper;
 
 import java.util.List;

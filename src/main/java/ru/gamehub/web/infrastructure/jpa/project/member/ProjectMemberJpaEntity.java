@@ -9,7 +9,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import ru.gamehub.web.infrastructure.jpa.project.model.ProjectJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.role.RoleJpaEntity;
+import ru.gamehub.web.infrastructure.jpa.reference.project.role.RoleJpaEntity;
 import ru.gamehub.web.infrastructure.jpa.user.UserJpaEntity;
 
 import java.time.OffsetDateTime;

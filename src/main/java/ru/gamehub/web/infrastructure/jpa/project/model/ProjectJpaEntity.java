@@ -15,9 +15,9 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import ru.gamehub.web.infrastructure.jpa.project.ProjectJpaRepository;
 import ru.gamehub.web.infrastructure.jpa.project.member.ProjectMemberJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.role.RoleJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.technology.TechnologyJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.type.ProjectTypeJpaEntity;
+import ru.gamehub.web.infrastructure.jpa.reference.project.role.RoleJpaEntity;
+import ru.gamehub.web.infrastructure.jpa.reference.project.technology.TechnologyJpaEntity;
+import ru.gamehub.web.infrastructure.jpa.reference.project.type.ProjectTypeJpaEntity;
 import ru.gamehub.web.infrastructure.jpa.user.UserJpaEntity;
 
 import java.time.OffsetDateTime;

@@ -16,12 +16,12 @@ import ru.gamehub.web.domain.project.exception.ProjectAccessDeniedException;
 import ru.gamehub.web.domain.project.exception.ProjectNotFoundException;
 import ru.gamehub.web.domain.project.member.ProjectMember;
 import ru.gamehub.web.domain.project.member.ProjectMemberRepository;
-import ru.gamehub.web.domain.project.role.Role;
-import ru.gamehub.web.domain.project.role.RoleRepository;
-import ru.gamehub.web.domain.project.technology.Technology;
-import ru.gamehub.web.domain.project.technology.TechnologyRepository;
-import ru.gamehub.web.domain.project.type.ProjectType;
-import ru.gamehub.web.domain.project.type.ProjectTypeRepository;
+import ru.gamehub.web.domain.reference.project.role.Role;
+import ru.gamehub.web.domain.reference.project.role.RoleRepository;
+import ru.gamehub.web.domain.reference.project.technology.Technology;
+import ru.gamehub.web.domain.reference.project.technology.TechnologyRepository;
+import ru.gamehub.web.domain.reference.project.type.ProjectType;
+import ru.gamehub.web.domain.reference.project.type.ProjectTypeRepository;
 import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.domain.user.UserRepository;
 
