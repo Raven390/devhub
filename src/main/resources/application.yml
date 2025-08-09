@@ -3,6 +3,16 @@ server:
   servlet:
     context-path: ${WEB_CONTEXT_PATH:/api/v1}
 
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui          # UI будет по /swagger-ui/index.html
+    operationsSorter: method
+    tagsSorter: alpha
+    display-request-duration: true
+    persistAuthorization: true # удобно в dev
+
 management:
   endpoints:
     web:

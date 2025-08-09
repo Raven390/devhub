@@ -1,6 +1,6 @@
-package ru.gamehub.web.web.reference.dto.response.technology;
+package ru.gamehub.web.web.reference.technology;
 
-public class ListTechnologiesItemDto {
+public class TechnologyDto {
     private Integer id;
     private String name;
 

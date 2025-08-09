@@ -7,12 +7,12 @@ import ru.gamehub.web.domain.reference.project.technology.Technology;
 import ru.gamehub.web.domain.reference.project.technology.TechnologyPage;
 import ru.gamehub.web.domain.reference.project.type.ProjectType;
 import ru.gamehub.web.domain.reference.project.type.ProjectTypePage;
-import ru.gamehub.web.web.reference.dto.response.role.ListRolesItemDto;
-import ru.gamehub.web.web.reference.dto.response.role.ListRolesResponse;
-import ru.gamehub.web.web.reference.dto.response.technology.ListTechnologiesItemDto;
-import ru.gamehub.web.web.reference.dto.response.technology.ListTechnologiesResponse;
-import ru.gamehub.web.web.reference.dto.response.type.ListTypesItemDto;
-import ru.gamehub.web.web.reference.dto.response.type.ListTypesResponse;
+import ru.gamehub.web.web.reference.role.ListRolesResponse;
+import ru.gamehub.web.web.reference.role.RoleDto;
+import ru.gamehub.web.web.reference.technology.ListTechnologiesResponse;
+import ru.gamehub.web.web.reference.technology.TechnologyDto;
+import ru.gamehub.web.web.reference.type.ListTypesResponse;
+import ru.gamehub.web.web.reference.type.TypeDto;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 public interface ReferenceMapper {
 
     // Роли
-    List<ListRolesItemDto> toListRolesItemDtoList(List<Role> roles);
+    List<RoleDto> toListRolesItemDtoList(List<Role> roles);
 
     default ListRolesResponse toListRolesResponse(RolePage rolePage) {
         return new ListRolesResponse(
@@ -32,7 +32,7 @@ public interface ReferenceMapper {
     }
 
     // Технологии
-    List<ListTechnologiesItemDto> toListTechnologiesItemDtoList(List<Technology> technologies);
+    List<TechnologyDto> toListTechnologiesItemDtoList(List<Technology> technologies);
 
     default ListTechnologiesResponse toListTechnologiesResponse(TechnologyPage techPage) {
         return new ListTechnologiesResponse(
@@ -44,7 +44,7 @@ public interface ReferenceMapper {
     }
 
     // Типы проектов
-    List<ListTypesItemDto> toListTypesItemDtoList(List<ProjectType> types);
+    List<TypeDto> toListTypesItemDtoList(List<ProjectType> types);
 
     default ListTypesResponse toListTypesResponse(ProjectTypePage typePage) {
         return new ListTypesResponse(

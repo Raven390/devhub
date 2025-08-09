@@ -7,6 +7,9 @@ package ru.gamehub.web.web.project.dto.request;
  * @param name        название проекта
  * @param description краткое описание проекта
  */
+
+import ru.gamehub.web.web.project.member.MemberRequestDto;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -22,5 +25,5 @@ public record CreateProjectRequest(
         String status,
         List<Integer> technologyIds,
         List<Integer> roleIds,
-        List<UUID> members // Может быть пустым, если участников нет на старте
+        List<MemberRequestDto> members // Может быть пустым, если участников нет на старте
 ) {}

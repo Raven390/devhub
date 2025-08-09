@@ -15,10 +15,10 @@ import ru.gamehub.web.application.reference.project.type.list.ListTypeService;
 import ru.gamehub.web.domain.reference.project.role.RolePage;
 import ru.gamehub.web.domain.reference.project.technology.TechnologyPage;
 import ru.gamehub.web.domain.reference.project.type.ProjectTypePage;
-import ru.gamehub.web.web.reference.dto.response.role.ListRolesResponse;
-import ru.gamehub.web.web.reference.dto.response.technology.ListTechnologiesResponse;
-import ru.gamehub.web.web.reference.dto.response.type.ListTypesResponse;
 import ru.gamehub.web.web.reference.mapper.ReferenceMapper;
+import ru.gamehub.web.web.reference.role.ListRolesResponse;
+import ru.gamehub.web.web.reference.technology.ListTechnologiesResponse;
+import ru.gamehub.web.web.reference.type.ListTypesResponse;
 
 @RestController
 @RequestMapping("/reference")

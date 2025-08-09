@@ -1,5 +1,11 @@
 package ru.gamehub.web.web.project.dto.response;
 
+import ru.gamehub.web.web.project.member.MemberDto;
+import ru.gamehub.web.web.reference.role.RoleDto;
+import ru.gamehub.web.web.reference.technology.TechnologyDto;
+import ru.gamehub.web.web.reference.type.TypeDto;
+import ru.gamehub.web.web.user.dto.UserDto;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -15,36 +21,11 @@ public record CreateProjectResponse(
         String shortDescription,
         String status,
         TypeDto type,
-        OwnerDto owner,
+        UserDto owner,
         List<TechnologyDto> technologies,
         List<RoleDto> roles,
         List<MemberDto> members,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
-
-    /**
-     * Вложенный DTO для типа проекта.
-     */
-    public record TypeDto(UUID id, String name) {}
-
-    /**
-     * Вложенный DTO для владельца проекта.
-     */
-    public record OwnerDto(UUID id, String name) {}
-
-    /**
-     * Вложенный DTO для технологии.
-     */
-    public record TechnologyDto(Integer id, String name) {}
-
-    /**
-     * Вложенный DTO для роли.
-     */
-    public record RoleDto(Integer id, String name) {}
-
-    /**
-     * Вложенный DTO для участника.
-     */
-    public record MemberDto(UUID id, String name) {}
 }

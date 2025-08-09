@@ -1,5 +1,10 @@
 package ru.gamehub.web.web.project.dto.response.list;
 
+import ru.gamehub.web.web.reference.role.RoleDto;
+import ru.gamehub.web.web.reference.technology.TechnologyDto;
+import ru.gamehub.web.web.reference.type.TypeDto;
+import ru.gamehub.web.web.user.dto.UserDto;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -12,13 +17,12 @@ public record ProjectListItemDto(
         UUID id,
         String name,
         String shortDescription,
-        UUID ownerId,
-        String ownerName,
-        String typeName,
+        UserDto owner,
+        TypeDto typeName,
         String status,
-        List<String> technologyNames,
-        List<String> roleNames,
-        int membersCount,
+        List<TechnologyDto> technologyNames,
+        List<RoleDto> roleNames,
+        List<UserDto> members,
         OffsetDateTime createdAt
 ) {}
 

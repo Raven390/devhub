@@ -2,6 +2,7 @@ package ru.gamehub.web.application.project.create;
 
 import ru.gamehub.web.application.common.Command;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,5 +42,15 @@ public record CreateProjectCommand(
         String status,
         List<Integer> technologyIds,
         List<Integer> roleIds,
-        List<UUID> members
-) implements Command {}
+        List<Member> members
+) implements Command {
+    /**
+     * Value-object команды: один участник.
+     * Не тащим web‑DTO в application.
+     */
+    public record Member(
+            UUID userId,
+            Integer roleId,
+            OffsetDateTime joinedAt
+    ) {}
+}

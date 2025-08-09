@@ -1,14 +1,16 @@
-package ru.gamehub.web.web.reference.dto.response.role;
+package ru.gamehub.web.web.reference.type;
 
-public class ListRolesItemDto {
-    private Integer id;
+import java.util.UUID;
+
+public class TypeDto {
+    private UUID id;
     private String name;
 
-    public Integer getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
