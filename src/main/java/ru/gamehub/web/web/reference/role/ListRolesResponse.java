@@ -1,9 +1,9 @@
-package ru.gamehub.web.web.reference.dto.response.role;
+package ru.gamehub.web.web.reference.role;
 
 import java.util.List;
 
 public record ListRolesResponse (
-    List<ListRolesItemDto> roles,
+    List<RoleDto> roles,
     long total,
     int page,
     int size

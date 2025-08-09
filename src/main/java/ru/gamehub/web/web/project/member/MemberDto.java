@@ -1,14 +1,16 @@
-package ru.gamehub.web.web.project.dto.request;
+package ru.gamehub.web.web.project.member;
+
+import ru.gamehub.web.web.reference.role.RoleDto;
+import ru.gamehub.web.web.user.dto.UserDto;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 /**
  * DTO для участника проекта в UpdateProjectRequest.
  */
 public record MemberDto(
-        UUID userId,
-        Integer roleId,
+        UserDto user,
+        RoleDto role,
         OffsetDateTime joinedAt // можно оставить nullable, если фронт не присылает
 ) {}
 

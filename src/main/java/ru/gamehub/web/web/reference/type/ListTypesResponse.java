@@ -1,9 +1,9 @@
-package ru.gamehub.web.web.reference.dto.response.type;
+package ru.gamehub.web.web.reference.type;
 
 import java.util.List;
 
 public record ListTypesResponse(
-        List<ListTypesItemDto> types,
+        List<TypeDto> types,
         long total,
         int page,
         int size

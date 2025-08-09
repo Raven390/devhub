@@ -93,7 +93,7 @@ public class ProjectAggregateAssembler {
             throw new RoleNotFoundException(notFoundIds);
         }
 
-        List<UUID> userIdList = command.members();
+        List<UUID> userIdList = command.members().stream().map(CreateProjectCommand.Member::userId).toList();
         List<ProjectMember> members = projectMemberRepository.findAllByUserIds(userIdList);
         if (members.size() != userIdList.size()) {
             // Собираем id реально найденных ролей
