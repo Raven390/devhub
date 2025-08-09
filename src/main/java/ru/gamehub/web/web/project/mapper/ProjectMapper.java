@@ -14,6 +14,7 @@ import ru.gamehub.web.web.project.dto.request.CreateProjectRequest;
 import ru.gamehub.web.web.project.dto.request.MemberDto;
 import ru.gamehub.web.web.project.dto.request.UpdateProjectRequest;
 import ru.gamehub.web.web.project.dto.response.CreateProjectResponse;
+import ru.gamehub.web.web.project.dto.response.GetProjectResponse;
 import ru.gamehub.web.web.project.dto.response.list.ListProjectResponse;
 import ru.gamehub.web.web.project.dto.response.list.ProjectListItemDto;
 
@@ -70,6 +71,20 @@ public interface ProjectMapper {
                 projectPage.getSize()
         );
     }
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "shortDescription", target = "shortDescription")
+    @Mapping(source = "description", target = "description")
+    @Mapping(source = "owner.id", target = "ownerId")
+    @Mapping(source = "owner.name", target = "ownerName")
+    @Mapping(source = "type", target = "type")
+    @Mapping(source = "status", target = "status")
+    @Mapping(target = "technologyNames", expression = "java(project.getTechnologies().stream().map(Technology::getName).toList())")
+    @Mapping(target = "roleNames", expression = "java(project.getRoles().stream().map(Role::getName).toList())")
+    @Mapping(target = "membersCount", expression = "java(project.getMembers() == null ? 0 : project.getMembers().size())")
+    @Mapping(source = "createdAt", target = "createdAt")
+    GetProjectResponse toGetProjectResponse(Project project);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
