@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.gamehub.web.application.project.create.CreateProjectCommand;
 import ru.gamehub.web.application.project.create.CreateProjectService;
+import ru.gamehub.web.application.project.get.GetProjectQuery;
+import ru.gamehub.web.application.project.get.GetProjectService;
 import ru.gamehub.web.application.project.list.ListProjectsCommand;
 import ru.gamehub.web.application.project.list.ListProjectsService;
 import ru.gamehub.web.application.project.update.UpdateProjectCommand;
@@ -23,6 +25,7 @@ import ru.gamehub.web.web.project.dto.request.CreateProjectRequest;
 import ru.gamehub.web.web.project.dto.request.ListProjectRequest;
 import ru.gamehub.web.web.project.dto.request.UpdateProjectRequest;
 import ru.gamehub.web.web.project.dto.response.CreateProjectResponse;
+import ru.gamehub.web.web.project.dto.response.GetProjectResponse;
 import ru.gamehub.web.web.project.dto.response.list.ListProjectResponse;
 import ru.gamehub.web.web.project.mapper.ProjectMapper;
 
@@ -36,14 +39,16 @@ public class ProjectController {
     private final CreateProjectService createProjectService;
     private final UpdateProjectService updateProjectService;
     private final ListProjectsService listProjectsService;
+    private final GetProjectService getProjectService;
 
     public ProjectController(ProjectMapper projectMapper,
                              CreateProjectService createProjectService, UpdateProjectService updateProjectService,
-                             ListProjectsService listProjectsService) {
+                             ListProjectsService listProjectsService, GetProjectService getProjectService) {
         this.projectMapper = projectMapper;
         this.createProjectService = createProjectService;
         this.updateProjectService = updateProjectService;
         this.listProjectsService = listProjectsService;
+        this.getProjectService = getProjectService;
     }
 
     /**
@@ -83,6 +88,15 @@ public class ProjectController {
         ListProjectsCommand command = new ListProjectsCommand(request.page(), request.size());
         ProjectPage projectPage = listProjectsService.handle(command);
         ListProjectResponse response = projectMapper.toListProjectResponse(projectPage);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetProjectResponse> get(@AuthenticationPrincipal Jwt principal,
+                                                  @PathVariable UUID id) {
+        GetProjectQuery command = new GetProjectQuery(id);
+        Project project = getProjectService.handle(command);
+        GetProjectResponse response = projectMapper.toGetProjectResponse(project);
         return ResponseEntity.ok().body(response);
     }
 }
