@@ -21,7 +21,6 @@ import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.domain.user.UserRepository;
 import ru.gamehub.web.domain.user.exception.UserNotFoundException;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -93,20 +92,6 @@ public class ProjectAggregateAssembler {
             throw new RoleNotFoundException(notFoundIds);
         }
 
-        List<UUID> userIdList = command.members().stream().map(CreateProjectCommand.Member::userId).toList();
-        List<ProjectMember> members = projectMemberRepository.findAllByUserIds(userIdList);
-        if (members.size() != userIdList.size()) {
-            // Собираем id реально найденных ролей
-            Set<UUID> foundIds = members.stream()
-                    .map(member -> member.getUser().getId())
-                    .collect(Collectors.toSet());
-
-            // Ищем отсутствующие id
-            List<UUID> notFoundIds = userIdList.stream()
-                    .filter(id -> !foundIds.contains(id))
-                    .toList();
-            throw new UserNotFoundException(notFoundIds);
-        }
 
         return Project.builder().owner(owner)
                                 .name(command.name())
@@ -115,7 +100,6 @@ public class ProjectAggregateAssembler {
                                 .type(type).status(status)
                                 .technologies(technologies)
                                 .roles(roles)
-                                .members(members)
                                 .build();
     }
 
@@ -140,13 +124,7 @@ public class ProjectAggregateAssembler {
         List<Role> roles = command.roleIds() != null
                 ? roleRepository.findAllById(command.roleIds())
                 : existing.getRoles();
-
-        List<ProjectMember> members = command.members().stream().map(cmd -> {
-            User user = userRepository.findById(cmd.userId()).orElseThrow();
-            Role role = roleRepository.findById(cmd.roleId()).orElseThrow();
-            OffsetDateTime joinedAt = cmd.joinedAt() != null ? cmd.joinedAt() : OffsetDateTime.now();
-            return ProjectMember.create(projectId, user, role, joinedAt);
-        }).toList();
+        List<ProjectMember> members = existing.getMembers();
 
         // Собираем новый агрегат на основе существующего — через билдер
         return Project.builder()

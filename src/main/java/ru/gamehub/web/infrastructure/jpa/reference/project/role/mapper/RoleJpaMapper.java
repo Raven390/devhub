@@ -6,6 +6,8 @@ import org.mapstruct.ObjectFactory;
 import ru.gamehub.web.domain.reference.project.role.Role;
 import ru.gamehub.web.infrastructure.jpa.reference.project.role.RoleJpaEntity;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface RoleJpaMapper {
 
@@ -13,6 +15,11 @@ public interface RoleJpaMapper {
 
     @InheritInverseConfiguration
     RoleJpaEntity toEntity(Role domain);
+
+    /** Маппинг списков в обе стороны */
+    List<Role> toDomainList(List<RoleJpaEntity> entities);
+
+    List<RoleJpaEntity> toEntityList(List<Role> domains);
 
     @ObjectFactory
     default Role createRole(RoleJpaEntity entity) {
