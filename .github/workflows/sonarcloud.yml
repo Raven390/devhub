@@ -23,8 +23,8 @@ jobs:
           java-version: 17
           cache: maven
 
-      - name: Build & tests (generate JaCoCo)
-        run: mvn -B clean verify   # если JaCoCo в профиле: mvn -B clean verify -Pcoverage
+      - name: Build & tests (generate classes and Jacoco)
+        run: mvn -B clean verify   # без -DskipTests!
 
       - name: Analyze with SonarCloud
         uses: SonarSource/sonarcloud-github-action@v2
@@ -32,7 +32,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          projectBaseDir: .
           args: >
             -Dsonar.projectKey=Raven390_devhub
             -Dsonar.organization=raven390
             -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.java.binaries=**/target/classes
+            -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+            -Dsonar.junit.reportPaths=**/target/surefire-reports
