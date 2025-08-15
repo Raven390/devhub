@@ -1,6 +1,7 @@
 package ru.gamehub.web.application.project.create;
 
 import ru.gamehub.web.application.common.Command;
+import ru.gamehub.web.domain.project.member.ProjectMemberStatus;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -50,7 +51,8 @@ public record CreateProjectCommand(
      */
     public record Member(
             UUID userId,
-            Integer roleId,
+            ProjectMemberStatus status,
+            List<Integer> roleIds,
             OffsetDateTime joinedAt
     ) {}
 }

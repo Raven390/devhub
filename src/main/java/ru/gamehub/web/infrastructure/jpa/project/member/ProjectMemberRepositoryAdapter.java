@@ -1,11 +1,11 @@
 package ru.gamehub.web.infrastructure.jpa.project.member;
 
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import ru.gamehub.web.domain.project.member.ProjectMember;
 import ru.gamehub.web.domain.project.member.ProjectMemberRepository;
 import ru.gamehub.web.infrastructure.jpa.project.member.mapper.ProjectMemberJpaMapper;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,12 +34,24 @@ public class ProjectMemberRepositoryAdapter implements ProjectMemberRepository {
     }
 
     @Override
-    @Transactional
     public ProjectMember save(ProjectMember projectMember) {
-        var entity = mapper.toEntity(projectMember);
-        var saved = jpaRepository.save(entity);
+        ProjectMemberJpaEntity entity = mapper.toEntity(projectMember);
+        ProjectMemberJpaEntity saved = jpaRepository.save(entity);
         return mapper.toDomain(saved);
     }
 
+
+    @Override
+    public List<ProjectMember> saveAll(Collection<ProjectMember> projectMemberList) {
+        List<ProjectMemberJpaEntity> jpaEntities = mapper.toEntityList(projectMemberList);
+        jpaEntities = jpaRepository.saveAll(jpaEntities);
+        return mapper.toDomainList(jpaEntities);
+    }
+
+    @Override
+    public void deleteAll(List<ProjectMember> projectMemberList) {
+        List<ProjectMemberJpaEntity> jpaEntities = mapper.toEntityList(projectMemberList);
+        jpaRepository.deleteAll(jpaEntities);
+    }
 }
 

@@ -3,7 +3,7 @@ package ru.gamehub.web.application.project.update;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.gamehub.web.application.project.ProjectAggregateAssembler;
-import ru.gamehub.web.application.testinfra.repository.InMemoryProjectMemoryRepository;
+import ru.gamehub.web.application.testinfra.repository.InMemoryProjectMemberRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryProjectRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryProjectTypeRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryRoleRepository;
@@ -16,6 +16,7 @@ import ru.gamehub.web.domain.project.exception.ProjectAccessDeniedException;
 import ru.gamehub.web.domain.project.exception.ProjectNotFoundException;
 import ru.gamehub.web.domain.project.member.ProjectMember;
 import ru.gamehub.web.domain.project.member.ProjectMemberRepository;
+import ru.gamehub.web.domain.project.member.ProjectMemberStatus;
 import ru.gamehub.web.domain.reference.project.role.Role;
 import ru.gamehub.web.domain.reference.project.role.RoleRepository;
 import ru.gamehub.web.domain.reference.project.technology.Technology;
@@ -55,7 +56,7 @@ public class UpdateProjectServiceTest {
         technologyRepository = new InMemoryTechnologyRepository();
         roleRepository = new InMemoryRoleRepository();
         typeRepository = new InMemoryProjectTypeRepository();
-        projectMemberRepository = new InMemoryProjectMemoryRepository();
+        projectMemberRepository = new InMemoryProjectMemberRepository();
 
         // Создаём assembler с зависимостями
         ProjectAggregateAssembler assembler = new ProjectAggregateAssembler(
@@ -63,7 +64,7 @@ public class UpdateProjectServiceTest {
         );
 
         // Сервис теперь зависит от assembler + projectRepository
-        service = new UpdateProjectService(projectRepository, assembler);
+        service = new UpdateProjectService(projectRepository, assembler, projectMemberRepository);
 
         owner = User.create("Nikita", "nikita@example.com", "Геймдев-разработчик");
         userRepository.save(owner);
@@ -81,6 +82,7 @@ public class UpdateProjectServiceTest {
     void updates_project_with_all_fields() {
         // Arrange: создать проект, сохранить в in-memory репо
         UUID projectId = UUID.randomUUID();
+        ProjectMember firstMember = ProjectMember.create(projectId, owner, List.of(devRole), ProjectMemberStatus.OWNER);
         Project project = Project.builder()
                 .id(projectId)
                 .owner(owner)
@@ -91,9 +93,7 @@ public class UpdateProjectServiceTest {
                 .status(ProjectStatus.DRAFT)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole))
-                .members(List.of(
-                        ProjectMember.create(projectId, owner, devRole, OffsetDateTime.now())
-                ))
+                .members(List.of(firstMember))
                 .createdAt(OffsetDateTime.now())
                 .build();
         projectRepository.save(project);
@@ -105,7 +105,15 @@ public class UpdateProjectServiceTest {
         roleRepository.save(qaRole);
 
         UpdateProjectCommand.Member updatedMember = new UpdateProjectCommand.Member(
-                newMember.getId(), qaRole.getId(), OffsetDateTime.now()
+                newMember.getId(), projectId, ProjectMemberStatus.ACTIVE, List.of(qaRole.getId()), OffsetDateTime.now(), null
+        );
+        UpdateProjectCommand.Member firstMemberInUpdate = new UpdateProjectCommand.Member(
+                owner.getId(),
+                projectId,
+                ProjectMemberStatus.OWNER,
+                firstMember.getRoles().stream().map(Role::getId).toList(),
+                firstMember.getJoinedAt(),
+                null
         );
 
         UpdateProjectCommand command = new UpdateProjectCommand(
@@ -118,7 +126,7 @@ public class UpdateProjectServiceTest {
                 UUID.randomUUID(),
                 List.of(javaTech.getId()),
                 List.of(devRole.getId(), qaRole.getId()),
-                List.of(updatedMember)
+                List.of(firstMemberInUpdate, updatedMember)
         );
 
         // Act
@@ -133,10 +141,21 @@ public class UpdateProjectServiceTest {
         assertEquals(ProjectStatus.ACTIVE, updated.getStatus());
         assertEquals(List.of(javaTech), updated.getTechnologies());
         assertEquals(2, updated.getRoles().size());
-        assertTrue(updated.getRoles().stream().anyMatch(r -> r.getName().equals("QA")));
-        assertEquals(1, updated.getMembers().size());
-        assertEquals(newMember.getId(), updated.getMembers().get(0).getUser().getId());
-        assertEquals(qaRole.getId(), updated.getMembers().get(0).getRole().getId());
+        assertTrue(updated.getRoles().stream().anyMatch(r -> r.getName().equals(qaRole.getName())));
+        assertEquals(2, updated.getMembers().size());
+        // есть ли участник с нужным userId
+        assertTrue(
+                updated.getMembers().stream()
+                        .anyMatch(m -> m.getUser().getId().equals(newMember.getId()))
+        );
+
+        // есть ли среди всех участников роль qaRole
+        assertTrue(
+                updated.getMembers().stream()
+                        .flatMap(m -> m.getRoles().stream())
+                        .anyMatch(r -> r.getId().equals(qaRole.getId()))
+        );
+
     }
 
     @Test

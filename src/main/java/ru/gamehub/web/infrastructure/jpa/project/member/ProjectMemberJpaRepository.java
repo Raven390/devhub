@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ProjectMemberJpaRepository extends JpaRepository<ProjectMemberJpaEntity, ProjectMemberJpaId> {
+public interface ProjectMemberJpaRepository extends JpaRepository<ProjectMemberJpaEntity, UUID> {
     List<ProjectMemberJpaEntity> findAllByProjectId(UUID projectId);
     List<ProjectMemberJpaEntity> findAllByUserIdIn(List<UUID> userId);
 }

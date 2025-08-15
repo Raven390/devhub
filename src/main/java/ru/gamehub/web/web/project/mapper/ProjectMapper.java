@@ -7,6 +7,7 @@ import ru.gamehub.web.application.project.update.UpdateProjectCommand;
 import ru.gamehub.web.domain.project.Project;
 import ru.gamehub.web.domain.project.ProjectPage;
 import ru.gamehub.web.domain.project.member.ProjectMember;
+import ru.gamehub.web.domain.project.member.ProjectMemberStatus;
 import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.web.project.dto.request.CreateProjectRequest;
 import ru.gamehub.web.web.project.dto.request.UpdateProjectRequest;
@@ -14,8 +15,9 @@ import ru.gamehub.web.web.project.dto.response.CreateProjectResponse;
 import ru.gamehub.web.web.project.dto.response.GetProjectResponse;
 import ru.gamehub.web.web.project.dto.response.list.ListProjectResponse;
 import ru.gamehub.web.web.project.dto.response.list.ProjectListItemDto;
+import ru.gamehub.web.web.project.member.MemberDto;
 import ru.gamehub.web.web.project.member.MemberMapper;
-import ru.gamehub.web.web.project.member.MemberRequestDto;
+import ru.gamehub.web.web.reference.role.RoleDto;
 import ru.gamehub.web.web.reference.role.RoleMapper;
 import ru.gamehub.web.web.reference.technology.TechnologyMapper;
 import ru.gamehub.web.web.reference.type.TypeMapper;
@@ -147,15 +149,18 @@ public interface ProjectMapper {
      * Преобразует DTO участника из веб‑запроса в value‑object команды создания.
      * Не тянем web‑DTO в application.
      */
-    default CreateProjectCommand.Member toCommandMember(MemberRequestDto dto) {
+    default CreateProjectCommand.Member toCommandMember(MemberDto dto) {
         if (dto == null) return null;
-        return new CreateProjectCommand.Member(dto.userId(), dto.roleId(), dto.joinedAt());
+        return new CreateProjectCommand.Member(dto.user().id(),
+                ProjectMemberStatus.fromString(dto.status()),
+                dto.roles().stream().map(RoleDto::getId).toList(),
+                dto.joinedAt());
     }
 
     /**
      * Преобразование списка участников (Create).
      */
-    default List<CreateProjectCommand.Member> toCommandMembers(List<MemberRequestDto> dtos) {
+    default List<CreateProjectCommand.Member> toCommandMembers(List<MemberDto> dtos) {
         return dtos == null ? List.of() : dtos.stream()
                 .map(this::toCommandMember)
                 .toList();
@@ -186,16 +191,21 @@ public interface ProjectMapper {
     /**
      * Преобразует DTO участника из веб‑запроса в value‑object команды обновления.
      */
-    default UpdateProjectCommand.Member toUpdateCommandMember(MemberRequestDto dto) {
+    default UpdateProjectCommand.Member toUpdateCommandMember(MemberDto dto) {
         if (dto == null) return null;
-        return new UpdateProjectCommand.Member(dto.userId(), dto.roleId(), dto.joinedAt());
+        return new UpdateProjectCommand.Member(
+                dto.user().id(), dto.projectId(),
+                ProjectMemberStatus.fromString(dto.status()),
+                dto.roles().stream().map(RoleDto::getId).toList(),
+                dto.joinedAt(), dto.leftAt()
+        );
     }
 
     /**
      * Преобразование списка участников (Update).
      */
-    default List<UpdateProjectCommand.Member> mapMemberDto(List<MemberRequestDto> dtos) {
-        return dtos == null ? List.of() : dtos.stream()
+    default List<UpdateProjectCommand.Member> mapMemberDto(List<MemberDto> dtos) {
+        return dtos == null ? null : dtos.stream()
                 .map(this::toUpdateCommandMember)
                 .toList();
     }

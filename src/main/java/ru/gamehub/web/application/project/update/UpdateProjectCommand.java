@@ -1,6 +1,7 @@
 package ru.gamehub.web.application.project.update;
 
 import ru.gamehub.web.application.common.Command;
+import ru.gamehub.web.domain.project.member.ProjectMemberStatus;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -55,6 +56,12 @@ public record UpdateProjectCommand(
         List<Integer> roleIds,
         List<Member> members
 ) implements Command {
-    public record Member(UUID userId, Integer roleId, OffsetDateTime joinedAt) {}
+    public record Member(
+            UUID userId,
+            UUID projectId,
+            ProjectMemberStatus status,
+            List<Integer> roleId,
+            OffsetDateTime joinedAt,
+            OffsetDateTime leftAt) {}
 
 }

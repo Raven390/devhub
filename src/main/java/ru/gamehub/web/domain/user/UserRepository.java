@@ -86,4 +86,7 @@ public interface UserRepository {
      * @param id идентификатор удаляемого пользователя
      */
     void delete(UUID id);
+
+
+    List<User> searchByNameOrEmail(String query, int limit);
 }

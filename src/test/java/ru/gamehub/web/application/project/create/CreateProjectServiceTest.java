@@ -3,7 +3,7 @@ package ru.gamehub.web.application.project.create;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.gamehub.web.application.project.ProjectAggregateAssembler;
-import ru.gamehub.web.application.testinfra.repository.InMemoryProjectMemoryRepository;
+import ru.gamehub.web.application.testinfra.repository.InMemoryProjectMemberRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryProjectRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryProjectTypeRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryRoleRepository;
@@ -46,7 +46,7 @@ public class CreateProjectServiceTest {
         technologyRepository = new InMemoryTechnologyRepository();
         roleRepository = new InMemoryRoleRepository();
         typeRepository = new InMemoryProjectTypeRepository();
-        projectMemberRepository = new InMemoryProjectMemoryRepository();
+        projectMemberRepository = new InMemoryProjectMemberRepository();
 
         // Создаём assembler с зависимостями
         ProjectAggregateAssembler assembler = new ProjectAggregateAssembler(
@@ -54,7 +54,7 @@ public class CreateProjectServiceTest {
         );
 
         // Сервис теперь зависит от assembler + projectRepository
-        service = new CreateProjectService(projectRepository, assembler);
+        service = new CreateProjectService(projectRepository, assembler, projectMemberRepository);
         owner = User.create("Nikita", "nikita@example.com", "Геймдев-разработчик");
         userRepository.save(owner);
 

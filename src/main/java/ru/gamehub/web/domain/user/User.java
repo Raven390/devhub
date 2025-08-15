@@ -117,6 +117,15 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    private User(UUID id) {
+        this.id = id;
+        this.name = null;
+        this.email = null;
+        this.headline = null;
+        this.createdAt = null;
+        this.updatedAt = null;
+    }
+
     /**
      * Фабричный метод для создания нового пользователя.
      *
@@ -139,6 +148,10 @@ public class User {
      */
     public static User create(String name, String email) {
         return new User(name, email);
+    }
+
+    public static User create(UUID id) {
+        return new User(id);
     }
 
     /**

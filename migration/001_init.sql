@@ -80,3 +80,57 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX idx_project_name_trgm ON project USING gin (name gin_trgm_ops);
 CREATE INDEX idx_project_short_description_trgm ON project USING gin (short_description gin_trgm_ops);
 
+-- A) Участники проекта (membership)
+CREATE TABLE IF NOT EXISTS gamehub.project_member (
+                                                      id               UUID PRIMARY KEY,
+                                                      project_id       UUID NOT NULL REFERENCES gamehub.project(id) ON DELETE CASCADE,
+                                                      user_id          UUID NOT NULL REFERENCES gamehub."users"(id) ON DELETE RESTRICT,
+                                                      member_status    TEXT NOT NULL DEFAULT 'ACTIVE', -- ACTIVE | INVITED | LEFT | REMOVED | OWNER
+                                                      joined_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+                                                      left_at          TIMESTAMPTZ,
+                                                      UNIQUE (project_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_member_project ON gamehub.project_member(project_id);
+CREATE INDEX IF NOT EXISTS idx_project_member_user ON gamehub.project_member(user_id);
+
+-- B) Множественные роли участника
+CREATE TABLE IF NOT EXISTS gamehub.project_member_role (
+                                                           project_member_id UUID NOT NULL REFERENCES gamehub.project_member(id) ON DELETE CASCADE,
+                                                           role_id           int4 NOT NULL REFERENCES gamehub.role(id) ON DELETE RESTRICT,
+                                                           PRIMARY KEY (project_member_id, role_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_member_role_role ON gamehub.project_member_role(role_id);
+
+
+CREATE TABLE IF NOT EXISTS gamehub.project_vacancy (
+                                                       id               UUID PRIMARY KEY,
+                                                       project_id       UUID NOT NULL REFERENCES gamehub.project(id) ON DELETE CASCADE,
+                                                       role_id          int4 NOT NULL REFERENCES gamehub.role(id) ON DELETE RESTRICT,
+                                                       title            TEXT,                 -- опционально: «Backend (Java)»
+                                                       description      TEXT,                 -- требования/задачи (markdown ok, sanitize в приложении)
+                                                       slots_total      INT  NOT NULL CHECK (slots_total > 0),
+                                                       slots_open       INT  NOT NULL CHECK (slots_open >= 0),
+                                                       vacancy_status   TEXT NOT NULL DEFAULT 'OPEN', -- OPEN | PAUSED | CLOSED | DRAFT
+                                                       created_by       UUID NOT NULL REFERENCES gamehub."users"(id) ON DELETE RESTRICT,
+                                                       created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+                                                       updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_vacancy_project ON gamehub.project_vacancy(project_id);
+CREATE INDEX IF NOT EXISTS idx_project_vacancy_role ON gamehub.project_vacancy(role_id);
+CREATE INDEX IF NOT EXISTS idx_project_vacancy_status ON gamehub.project_vacancy(vacancy_status);
+
+CREATE TABLE IF NOT EXISTS gamehub.project_audit_log (
+                                                         id            BIGSERIAL PRIMARY KEY,
+                                                         project_id    UUID NOT NULL REFERENCES gamehub.project(id) ON DELETE CASCADE,
+                                                         actor_id      UUID,                     -- кто совершил (может быть NULL для системных операций)
+                                                         action        TEXT NOT NULL,            -- PROJECT_CREATED, MEMBER_ADDED, MEMBER_ROLE_ADDED, TECHNOLOGY_ADDED, VACANCY_CREATED, ...
+                                                         occurred_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+                                                         details       JSONB                     -- произвольный payload: { "memberId": "...", "roleIds": "...", "old":..., "new":... }
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_audit_project_time ON gamehub.project_audit_log(project_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_project_audit_action ON gamehub.project_audit_log(action);
+

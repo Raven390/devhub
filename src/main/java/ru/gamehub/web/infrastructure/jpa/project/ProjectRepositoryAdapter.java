@@ -8,11 +8,11 @@ import ru.gamehub.web.domain.project.ProjectPage;
 import ru.gamehub.web.domain.project.ProjectRepository;
 import ru.gamehub.web.infrastructure.jpa.project.mapper.ProjectJpaMapper;
 import ru.gamehub.web.infrastructure.jpa.project.member.ProjectMemberJpaEntity;
-import ru.gamehub.web.infrastructure.jpa.project.member.ProjectMemberJpaId;
 import ru.gamehub.web.infrastructure.jpa.project.model.ProjectJpaEntity;
 import ru.gamehub.web.infrastructure.jpa.reference.project.role.RoleJpaEntity;
 import ru.gamehub.web.infrastructure.jpa.reference.project.technology.TechnologyJpaEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,11 +76,15 @@ public class ProjectRepositoryAdapter implements ProjectRepository {
                 .map(technology -> entityManager.getReference(TechnologyJpaEntity.class, technology.getId()))
                 .toList();
 
-        List<ProjectMemberJpaEntity> members = project.getMembers().stream()
-                .map(member ->
-                        entityManager.getReference(ProjectMemberJpaEntity.class,
-                                new ProjectMemberJpaId(member.getProjectId(), member.getUser().getId()))
-                ).toList();
+        List<ProjectMemberJpaEntity> members;
+        if (project.getMembers() != null) {
+             members= project.getMembers().stream()
+                    .map(member ->
+                            entityManager.getReference(ProjectMemberJpaEntity.class, member.getId())
+                    ).toList();
+        } else {
+            members = new ArrayList<>();
+        }
 
         ProjectJpaEntity entity = projectJpaMapper.toEntity(project);
         entity.setMembers(members);

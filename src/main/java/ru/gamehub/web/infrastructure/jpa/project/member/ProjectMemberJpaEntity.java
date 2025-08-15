@@ -1,51 +1,68 @@
 package ru.gamehub.web.infrastructure.jpa.project.member;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import ru.gamehub.web.infrastructure.jpa.project.model.ProjectJpaEntity;
 import ru.gamehub.web.infrastructure.jpa.reference.project.role.RoleJpaEntity;
 import ru.gamehub.web.infrastructure.jpa.user.UserJpaEntity;
 
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "project_member", schema = "gamehub")
+@Table(name = "project_member", schema = "gamehub",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "user_id"}))
 public class ProjectMemberJpaEntity {
 
-    @EmbeddedId
-    private ProjectMemberJpaId id;
+    @Id
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("projectId")
-    @JoinColumn(name = "project_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "project_id", nullable = false)
     private ProjectJpaEntity project;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserJpaEntity user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
-    private RoleJpaEntity role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "status", length = 32)
+    private ProjectMemberStatusJpa status;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            schema = "gamehub",
+            name = "project_member_role",
+            joinColumns = @JoinColumn(name = "project_member_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<RoleJpaEntity> roles = new java.util.ArrayList<>();
 
     @Column(name = "joined_at", nullable = false)
     private OffsetDateTime joinedAt;
 
+    @Column(name = "left_at")
+    private OffsetDateTime leftAt;
+
     public ProjectMemberJpaEntity() {
     }
 
-    public ProjectMemberJpaId getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(ProjectMemberJpaId id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -65,12 +82,20 @@ public class ProjectMemberJpaEntity {
         this.user = user;
     }
 
-    public RoleJpaEntity getRole() {
-        return role;
+    public ProjectMemberStatusJpa getStatus() {
+        return status;
     }
 
-    public void setRole(RoleJpaEntity role) {
-        this.role = role;
+    public void setStatus(ProjectMemberStatusJpa status) {
+        this.status = status;
+    }
+
+    public List<RoleJpaEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RoleJpaEntity> role) {
+        this.roles = role;
     }
 
     public OffsetDateTime getJoinedAt() {
@@ -79,5 +104,13 @@ public class ProjectMemberJpaEntity {
 
     public void setJoinedAt(OffsetDateTime joinedAt) {
         this.joinedAt = joinedAt;
+    }
+
+    public OffsetDateTime getLeftAt() {
+        return leftAt;
+    }
+
+    public void setLeftAt(OffsetDateTime leftAt) {
+        this.leftAt = leftAt;
     }
 }

@@ -1,5 +1,6 @@
 package ru.gamehub.web.infrastructure.jpa.user;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.domain.user.UserRepository;
@@ -74,5 +75,11 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public void delete(UUID id) {
         jpaUserRepository.deleteById(id);
+    }
+
+    @Override
+    public List<User> searchByNameOrEmail(String query, int limit) {
+        var page = PageRequest.of(0, limit);
+        return jpaUserRepository.searchAllByNameOrEmail(query, page).stream().map(userJpaMapper::toDomain).toList();
     }
 }

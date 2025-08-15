@@ -12,7 +12,7 @@ import java.util.List;
 public interface MemberMapper {
 
     @Mapping(source = "user", target = "user")
-    @Mapping(source = "role", target = "role")
+    @Mapping(source = "roles", target = "roles")
     @Mapping(source = "joinedAt", target = "joinedAt")
     MemberDto toDto(ProjectMember member);
 

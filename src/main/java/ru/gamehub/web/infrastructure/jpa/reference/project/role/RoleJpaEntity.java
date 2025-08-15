@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
- * JPA-сущность для справочника ролей в проекте (таблица role).
+ * JPA-сущность для справочника ролей в проекте (таблица roles).
  * Используется в связке many-to-many с проектами (project_role) и участниками.
  */
 @Entity

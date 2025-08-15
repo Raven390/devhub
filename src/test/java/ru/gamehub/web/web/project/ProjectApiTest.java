@@ -11,9 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.gamehub.web.application.project.ProjectAggregateAssembler;
 import ru.gamehub.web.application.project.create.CreateProjectService;
+import ru.gamehub.web.application.project.get.GetProjectService;
 import ru.gamehub.web.application.project.list.ListProjectsService;
 import ru.gamehub.web.application.project.update.UpdateProjectService;
-import ru.gamehub.web.application.testinfra.repository.InMemoryProjectMemoryRepository;
+import ru.gamehub.web.application.testinfra.repository.InMemoryProjectMemberRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryProjectRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryProjectTypeRepository;
 import ru.gamehub.web.application.testinfra.repository.InMemoryRoleRepository;
@@ -24,6 +25,11 @@ import ru.gamehub.web.domain.user.User;
 import ru.gamehub.web.infrastructure.security.config.SecurityConfig;
 import ru.gamehub.web.web.project.dto.request.CreateProjectRequest;
 import ru.gamehub.web.web.project.mapper.ProjectMapperImpl;
+import ru.gamehub.web.web.project.member.MemberMapperImpl;
+import ru.gamehub.web.web.reference.role.RoleMapperImpl;
+import ru.gamehub.web.web.reference.technology.TechnologyMapperImpl;
+import ru.gamehub.web.web.reference.type.TypeMapperImpl;
+import ru.gamehub.web.web.user.mapper.UserMapperImpl;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +41,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ProjectController.class)
-@Import({ProjectMapperImpl.class, SecurityConfig.class})
+@Import(
+        {
+                ProjectMapperImpl.class,
+                UserMapperImpl.class,
+                TypeMapperImpl.class,
+                TechnologyMapperImpl.class,
+                MemberMapperImpl.class,
+                RoleMapperImpl.class,
+                SecurityConfig.class
+        }
+)
 class ProjectApiTest {
 
     private static final String PATH = "/projects";
@@ -73,7 +89,7 @@ class ProjectApiTest {
         public ProjectAggregateAssembler aggregateAssembler(InMemoryUserRepository userRepository, InMemoryProjectTypeRepository typeRepository) {
             var technologyRepository = new InMemoryTechnologyRepository();
             var roleRepository = new InMemoryRoleRepository();
-            var projectMemberRepository = new InMemoryProjectMemoryRepository();
+            var projectMemberRepository = new InMemoryProjectMemberRepository();
 
             // Создаём assembler с зависимостями
             return new ProjectAggregateAssembler(
@@ -96,20 +112,30 @@ class ProjectApiTest {
         }
 
         @Bean
-        public CreateProjectService createProjectService(InMemoryProjectRepository projectRepository, ProjectAggregateAssembler aggregateAssembler) {
-            return new CreateProjectService(projectRepository, aggregateAssembler);
+        public CreateProjectService createProjectService(InMemoryProjectRepository projectRepository, ProjectAggregateAssembler aggregateAssembler, InMemoryProjectMemberRepository memberRepository) {
+            return new CreateProjectService(projectRepository, aggregateAssembler, memberRepository);
         }
 
+        @Bean
+        public InMemoryProjectMemberRepository memberRepository() {
+            return new InMemoryProjectMemberRepository();
+        }
 
         @Bean
-        public UpdateProjectService updateProjectService(InMemoryProjectRepository projectRepository, ProjectAggregateAssembler aggregateAssembler) {
-            return new UpdateProjectService(projectRepository, aggregateAssembler);
+        public UpdateProjectService updateProjectService(InMemoryProjectRepository projectRepository, ProjectAggregateAssembler aggregateAssembler, InMemoryProjectMemberRepository memberRepository) {
+            return new UpdateProjectService(projectRepository, aggregateAssembler, memberRepository);
         }
 
         @Bean
         public ListProjectsService listProjectsService(InMemoryProjectRepository projectRepository) {
             return new ListProjectsService(projectRepository);
         }
+
+        @Bean
+        public GetProjectService getProjectService(InMemoryProjectRepository projectRepository) {
+            return new GetProjectService(projectRepository);
+        }
+
 
     }
 

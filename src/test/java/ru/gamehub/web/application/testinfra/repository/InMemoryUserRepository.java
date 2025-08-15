@@ -24,4 +24,9 @@ public class InMemoryUserRepository extends BaseInMemoryRepository<User, UUID> i
     public List<User> findAllById(List<UUID> userIdList) {
         return List.of();
     }
+
+    @Override
+    public List<User> searchByNameOrEmail(String query, int limit) {
+        return List.of();
+    }
 }
