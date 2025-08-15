@@ -50,9 +50,14 @@ public class CreateProjectService implements CommandHandler<CreateProjectCommand
     public Project handle(CreateProjectCommand command) {
         Project project = projectAssembler.assemble(command);
         project = projectRepository.save(project);
-        UUID projectId = project.getId();
+
         // Работа с мембером
         List<CreateProjectCommand.Member> members = command.members();
+        if (members == null || members.isEmpty()) {
+            return project;
+        }
+        
+        UUID projectId = project.getId();
         List<ProjectMember> projectMemberList = members.stream().map(member -> {
             User user = User.create(member.userId());
             List<Role> roles = member.roleIds().stream().map(Role::create).toList();

@@ -5,20 +5,23 @@ public enum ProjectMemberStatus {
     OWNER, ACTIVE, INVITED, LEFT, REMOVED;
 
     /**
-     * Безопасное преобразование строки в ProjectMemberStatus.
-     * Игнорирует регистр и лишние пробелы.
-     *
-     * @param value строковое представление (null допустим)
-     * @return enum или null, если вход некорректен
+     * Строгое преобразование строки в ProjectMemberStatus.
+     * - тримит пробелы
+     * - не зависит от регистра
+     * - кидает IllegalArgumentException на null/пустые/неизвестные значения
      */
     public static ProjectMemberStatus fromString(String value) {
-        if (value == null || value.isBlank()) {
-            return null;
+        if (value == null) {
+            throw new IllegalArgumentException("Status is null");
+        }
+        String v = value.trim();
+        if (v.isEmpty()) {
+            throw new IllegalArgumentException("Status is blank");
         }
         try {
-            return ProjectMemberStatus.valueOf(value.trim().toUpperCase());
+            return ProjectMemberStatus.valueOf(v.toUpperCase());
         } catch (IllegalArgumentException ex) {
-            return null; // либо бросить кастомное исключение, если нужна жёсткая валидация
+            throw new IllegalArgumentException("Unknown status: " + value);
         }
     }
 }

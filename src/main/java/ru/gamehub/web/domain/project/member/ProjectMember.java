@@ -36,7 +36,6 @@ public class ProjectMember {
         this.leftAt = leftAt;
     }
 
-    // Фабрики (оставил твои сигнатуры, но добавил нормализацию)
     public static ProjectMember create(UUID id, UUID projectId, User user, List<Role> roles,
                                        ProjectMemberStatus status, OffsetDateTime joinedAt, OffsetDateTime leftAt) {
         return new ProjectMember(id != null ? id : UUID.randomUUID(), projectId, user, roles, status, joinedAt, leftAt);
