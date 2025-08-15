@@ -153,8 +153,7 @@ public interface ProjectMapper {
         if (dto == null) return null;
         return new CreateProjectCommand.Member(dto.user().id(),
                 ProjectMemberStatus.fromString(dto.status()),
-                dto.roles().stream().map(RoleDto::getId).toList(),
-                dto.joinedAt());
+                dto.roles().stream().map(RoleDto::getId).toList());
     }
 
     /**
