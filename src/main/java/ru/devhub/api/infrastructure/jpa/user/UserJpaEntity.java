@@ -44,7 +44,7 @@ import java.util.UUID;
  * @see UserJpaMapper
  */
 @Entity
-@Table(name = "users", schema = "gamehub")
+@Table(name = "users", schema = "devhub")
 public class UserJpaEntity {
 
     /**

@@ -62,7 +62,7 @@ import java.util.UUID;
  * @see ProjectJpaRepository
  */
 @Entity
-@Table(name = "project", schema = "gamehub")
+@Table(name = "project", schema = "devhub")
 public class ProjectJpaEntity {
     @Id
     private UUID id;
@@ -90,7 +90,7 @@ public class ProjectJpaEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            schema = "gamehub",
+            schema = "devhub",
             name = "project_technology",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "technology_id")
@@ -99,7 +99,7 @@ public class ProjectJpaEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            schema = "gamehub",
+            schema = "devhub",
             name = "project_role",
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
