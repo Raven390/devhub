@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
  * Используется в связке many-to-many с проектами (project_technology).
  */
 @Entity
-@Table(name = "technology", schema = "gamehub")
+@Table(name = "technology", schema = "devhub")
 public class TechnologyJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

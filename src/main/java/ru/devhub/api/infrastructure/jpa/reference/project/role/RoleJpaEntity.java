@@ -12,7 +12,7 @@ import jakarta.persistence.Table;
  * Используется в связке many-to-many с проектами (project_role) и участниками.
  */
 @Entity
-@Table(name = "role", schema = "gamehub")
+@Table(name = "role", schema = "devhub")
 public class RoleJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

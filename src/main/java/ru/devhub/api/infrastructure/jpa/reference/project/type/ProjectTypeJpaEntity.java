@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 
 @Entity
-@Table(name = "project_type", schema = "gamehub")
+@Table(name = "project_type", schema = "devhub")
 public class ProjectTypeJpaEntity {
     @Id
     private UUID id;

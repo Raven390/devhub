@@ -1,5 +1,5 @@
 version: '3.9'
-name: gamehub
+name: devhub
 services:
   postgresql:
     image: bitnami/postgresql:15.10.0
@@ -12,18 +12,9 @@ services:
       - './pg_data:/bitnami/postgresql'
     networks:
       - software
-  opensearch:
-    image: 'bitnami/opensearch:latest'
-    ports:
-      - "9300:9300"
-      - "9200:9200"
-    environment:
-      - OPENSEARCH_PASSWORD=bitnami
-    volumes:
-      - './opensearch_data:/bitnami/opensearch/data'
 
   keycloak:
-    image: docker.io/bitnami/keycloak:latest
+    image: docker.io/bitnami/keycloak:26.3.0
     container_name: keycloak
     ports:
       - "80:8080"
@@ -43,29 +34,6 @@ services:
       - './keyckloak_data:/opt/bitnami/keycloak/data'
     networks:
       - software
-  webdav:
-    container_name: web-dav
-    image: bytemark/webdav:latest
-    restart: always
-    environment:
-      AUTH_TYPE: Digest
-      USERNAME: gamehub
-      PASSWORD: 123
-    ports:
-      - "8111:80"
-    volumes:
-      - ./webdav_data:/var/lib/dav
-#  liquibase:
-#    image: liquibase:0.1
-#    container_name: migrations
-#    environment:
-#      - URL=jdbc:postgresql://postgresql:5432/load_testing
-#      - USERNAME=admin
-#      - PASSWORD=admin
-#    depends_on:
-#      - postgresql
-#    networks:
-#      - software
 
 networks:
   software:

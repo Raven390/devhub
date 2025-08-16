@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "project_member", schema = "gamehub",
+@Table(name = "project_member", schema = "devhub",
         uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "user_id"}))
 public class ProjectMemberJpaEntity {
 
@@ -42,7 +42,7 @@ public class ProjectMemberJpaEntity {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            schema = "gamehub",
+            schema = "devhub",
             name = "project_member_role",
             joinColumns = @JoinColumn(name = "project_member_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
