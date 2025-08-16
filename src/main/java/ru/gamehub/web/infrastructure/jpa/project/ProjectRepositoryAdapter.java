@@ -68,17 +68,23 @@ public class ProjectRepositoryAdapter implements ProjectRepository {
      */
     @Override
     public Project save(Project project) {
-        List<RoleJpaEntity> roles = project.getRoles().stream()
-                .map(role -> entityManager.getReference(RoleJpaEntity.class, role.getId()))
+        // 1) Смаппили базовые поля в JPA
+        ProjectJpaEntity entity = projectJpaMapper.toEntity(project);
+
+        // 2) Подцепили менедженные ссылки на справочники
+        List<RoleJpaEntity> roleRefs = (project.getRoles() == null) ? List.of()
+                : project.getRoles().stream()
+                .map(r -> entityManager.getReference(RoleJpaEntity.class, r.getId()))
                 .toList();
 
-        List<TechnologyJpaEntity> technologies = project.getTechnologies().stream()
-                .map(technology -> entityManager.getReference(TechnologyJpaEntity.class, technology.getId()))
+        List<TechnologyJpaEntity> techRefs = (project.getTechnologies() == null) ? List.of()
+                : project.getTechnologies().stream()
+                .map(t -> entityManager.getReference(TechnologyJpaEntity.class, t.getId()))
                 .toList();
 
         List<ProjectMemberJpaEntity> members;
         if (project.getMembers() != null) {
-             members= project.getMembers().stream()
+            members = project.getMembers().stream()
                     .map(member ->
                             entityManager.getReference(ProjectMemberJpaEntity.class, member.getId())
                     ).toList();
@@ -86,13 +92,13 @@ public class ProjectRepositoryAdapter implements ProjectRepository {
             members = new ArrayList<>();
         }
 
-        ProjectJpaEntity entity = projectJpaMapper.toEntity(project);
         entity.setMembers(members);
-        entity.setRoles(roles);
-        entity.setTechnologies(technologies);
+        entity.setRoles(roleRefs);
+        entity.setTechnologies(techRefs);
 
-        jpaRepository.save(entity);
-        return project;
+        // 3) Сохранили и вернули доменную модель из персистед-сущности
+        ProjectJpaEntity persisted = jpaRepository.save(entity);
+        return projectJpaMapper.toDomain(persisted);
     }
 
     /**

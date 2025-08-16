@@ -41,5 +41,5 @@ jobs:
             -Dsonar.junit.reportPaths=target/surefire-reports
             -Dsonar.sources=src/main/java
             -Dsonar.tests=src/test/java
-            -Dsonar.exclusions=/target/**,/build/**,/out/**,/node_modules/**
+            -Dsonar.exclusions=target/**,build/**,out/**,node_modules/**,src/main/java/ru/gamehub/web/web/config/openapi/**/*
 
