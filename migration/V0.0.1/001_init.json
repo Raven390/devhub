@@ -1,0 +1,24 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "V0.0.1",
+        "author": "nikita.potapov@develonica.ru",
+        "changes": [
+          {
+            "sqlFile": {
+              "splitStatements": false,
+              "path": "migration/V0.0.1/001_init.sql"
+            }
+          }
+        ],
+        "rollback": {
+          "sqlFile": {
+            "splitStatements": false,
+            "path": "migration/V0.0.1/rollback.sql"
+          }
+        }
+      }
+    }
+  ]
+}

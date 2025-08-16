@@ -1,0 +1,81 @@
+name: DB Migrations (Liquibase only)
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        ports: ['5432:5432']
+        env:
+          POSTGRES_DB: devhub
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd="pg_isready -U postgres -d devhub"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      JDBC_URL: jdbc:postgresql://localhost:5432/devhub
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      LIQUIBASE_CHANGELOG: migration/changelog.json
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Wait for DB
+        run: |
+          for i in {1..60}; do
+            pg_isready -h localhost -p 5432 -d devhub -U postgres && break
+            sleep 1
+          done
+
+      - name: Create extensions (pg_trgm)
+        env:
+          PGPASSWORD: ${{ env.DB_PASSWORD }}
+        run: |
+          psql -h localhost -U $DB_USER -d devhub -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;"
+
+      # ---------- Вариант A: Liquibase через Maven plugin ----------
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Liquibase Validate (Maven)
+        if: hashFiles('pom.xml') != ''
+        run: |
+          mvn -B -V -Dliquibase.url=${{ env.JDBC_URL }} \
+                 -Dliquibase.username=${{ env.DB_USER }} \
+                 -Dliquibase.password=${{ env.DB_PASSWORD }} \
+                 -Dliquibase.changeLogFile=${{ env.LIQUIBASE_CHANGELOG }} \
+                 liquibase:validate
+
+      - name: Liquibase Update (Maven)
+        if: hashFiles('pom.xml') != ''
+        run: |
+          mvn -B -V -Dliquibase.url=${{ env.JDBC_URL }} \
+                 -Dliquibase.username=${{ env.DB_USER }} \
+                 -Dliquibase.password=${{ env.DB_PASSWORD }} \
+                 -Dliquibase.changeLogFile=${{ env.LIQUIBASE_CHANGELOG }} \
+                 liquibase:update
+
+      # Небольшой smoke-check после миграций
+      - name: Smoke check (schema objects exist)
+        env:
+          PGPASSWORD: ${{ env.DB_PASSWORD }}
+        run: |
+          psql -h localhost -U $DB_USER -d devhub -c "\dx"
+          psql -h localhost -U $DB_USER -d devhub -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='devhub';"
+          psql -h localhost -U $DB_USER -d devhub -c "SELECT * FROM devhub.role ORDER BY name LIMIT 5;"
