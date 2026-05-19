@@ -28,7 +28,7 @@ jobs:
       JDBC_URL: jdbc:postgresql://localhost:5432/devhub
       DB_USER: postgres
       DB_PASSWORD: postgres
-      LIQUIBASE_CHANGELOG: src/main/resources/migration/changelog.json
+      LIQUIBASE_CHANGELOG: migration/changelog.json
 
     steps:
       - uses: actions/checkout@v4
