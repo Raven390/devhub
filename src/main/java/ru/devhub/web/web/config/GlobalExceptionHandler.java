@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.devhub.web.domain.project.exception.InvalidProjectStatusException;
 import ru.devhub.web.domain.project.exception.ProjectAccessDeniedException;
+import ru.devhub.web.domain.project.exception.ProjectMemberNotFoundException;
 import ru.devhub.web.domain.project.exception.ProjectNotFoundException;
+import ru.devhub.web.domain.project.exception.UserAlreadyInProjectException;
 import ru.devhub.web.domain.reference.project.role.exception.RoleNotFoundException;
 import ru.devhub.web.domain.reference.project.technology.exception.TechnologyNotFoundException;
 import ru.devhub.web.domain.reference.project.type.exception.ProjectTypeNotFoundException;
@@ -93,6 +95,13 @@ public class GlobalExceptionHandler {
         return error(HttpStatus.NOT_FOUND, ex.getMessage(), req);
     }
 
+    /** 404 — участник проекта не найден */
+    @ExceptionHandler(ProjectMemberNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleProjectMemberNotFound(
+            ProjectMemberNotFoundException ex, HttpServletRequest req) {
+        return error(HttpStatus.NOT_FOUND, ex.getMessage(), req);
+    }
+
     /** 403 — только владелец может изменять проект */
     @ExceptionHandler(ProjectAccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleProjectAccessDenied(
@@ -105,6 +114,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidProjectStatus(
             InvalidProjectStatusException ex, HttpServletRequest req) {
         return error(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage(), req);
+    }
+
+    /** 409 — пользователь уже состоит в проекте или имеет активную заявку */
+    @ExceptionHandler(UserAlreadyInProjectException.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyInProject(
+            UserAlreadyInProjectException ex, HttpServletRequest req) {
+        return error(HttpStatus.CONFLICT, ex.getMessage(), req);
     }
 
     /** 422 — несуществующая технология */

@@ -122,6 +122,86 @@ paths:
         "422":
           $ref: '#/components/responses/UnprocessableEntity'
 
+  /projects/{id}/members:
+    parameters:
+      - $ref: '#/components/parameters/ProjectIdParam'
+
+    post:
+      tags: [ projects ]
+      summary: Подать заявку / пригласить участника
+      operationId: joinProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JoinProjectRequest'
+      responses:
+        "201":
+          description: Заявка создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponseDto'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "409":
+          description: Пользователь уже является участником проекта
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /projects/{id}/members/{memberId}:
+    parameters:
+      - $ref: '#/components/parameters/ProjectIdParam'
+      - name: memberId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    delete:
+      tags: [ projects ]
+      summary: Покинуть проект или исключить участника
+      operationId: removeProjectMember
+      responses:
+        "204":
+          description: Участник удалён
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      tags: [ projects ]
+      summary: Обновить статус участника (принять/отклонить заявку)
+      operationId: updateMemberStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateMemberStatusRequest'
+      responses:
+        "200":
+          description: Статус участника обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponseDto'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "422":
+          $ref: '#/components/responses/UnprocessableEntity'
+
   # ── REFERENCE ────────────────────────────────────────────
   /reference/roles:
     get:
@@ -354,6 +434,23 @@ components:
           items:
             type: integer
           default: []
+        status:
+          $ref: '#/components/schemas/MemberStatus'
+
+    JoinProjectRequest:
+      type: object
+      required: [ roleIds ]
+      properties:
+        roleIds:
+          type: array
+          items:
+            type: integer
+          default: []
+
+    UpdateMemberStatusRequest:
+      type: object
+      required: [ status ]
+      properties:
         status:
           $ref: '#/components/schemas/MemberStatus'
 

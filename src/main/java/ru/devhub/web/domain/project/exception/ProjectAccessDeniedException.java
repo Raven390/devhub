@@ -30,4 +30,8 @@ public class ProjectAccessDeniedException extends RuntimeException {
     public ProjectAccessDeniedException(UUID ownerId, UUID userId) {
         super("Project access denied. OwnerId: %s, userId: %s".formatted(ownerId, userId));
     }
+
+    public ProjectAccessDeniedException(String message) {
+        super(message);
+    }
 }

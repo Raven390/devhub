@@ -1,13 +1,20 @@
 package ru.devhub.web.domain.project.model;
 
+import ru.devhub.web.domain.project.exception.InvalidProjectStatusException;
+import ru.devhub.web.domain.project.exception.ProjectAccessDeniedException;
+import ru.devhub.web.domain.project.exception.ProjectMemberNotFoundException;
+import ru.devhub.web.domain.project.exception.UserAlreadyInProjectException;
 import ru.devhub.web.domain.project.member.ProjectMember;
+import ru.devhub.web.domain.project.member.ProjectMemberStatus;
 import ru.devhub.web.domain.reference.project.role.Role;
 import ru.devhub.web.domain.reference.project.technology.Technology;
 import ru.devhub.web.domain.reference.project.type.ProjectType;
 import ru.devhub.web.domain.user.User;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -247,5 +254,110 @@ public class Project {
 
     public OffsetDateTime getUpdatedAt() {
         return updatedAt;
+    }
+
+    /**
+     * Adds a participant or creates a join request.
+     * Invariants:
+     * - project must be RECRUITING or ACTIVE;
+     * - user must not have an active membership record.
+     */
+    public Project addMember(User user, List<Role> roles, ProjectMemberStatus status) {
+        boolean alreadyMember = safeMembers().stream()
+                .anyMatch(member -> member.getUser().getId().equals(user.getId())
+                        && !Set.of(ProjectMemberStatus.LEFT, ProjectMemberStatus.REMOVED).contains(member.getStatus()));
+        if (alreadyMember) {
+            throw new UserAlreadyInProjectException(user.getId(), this.id);
+        }
+        if (!Set.of(ProjectStatus.RECRUITING, ProjectStatus.ACTIVE).contains(this.status)) {
+            throw new InvalidProjectStatusException("Cannot add members to project in status: " + this.status);
+        }
+
+        ProjectMember newMember = ProjectMember.create(this.id, user, roles, status);
+        List<ProjectMember> updated = new ArrayList<>(safeMembers());
+        updated.add(newMember);
+        return Project.builder()
+                .from(this)
+                .members(updated)
+                .updatedAt(OffsetDateTime.now())
+                .build();
+    }
+
+    /**
+     * Removes a participant through status transition.
+     * Owner cannot be removed. Requesting user must be owner or the member themselves.
+     */
+    public Project removeMember(UUID memberId, UUID requestingUserId) {
+        ProjectMember target = findMemberById(memberId);
+        if (target.getStatus() == ProjectMemberStatus.OWNER) {
+            throw new ProjectAccessDeniedException("Owner cannot be removed from project");
+        }
+
+        boolean isSelf = target.getUser().getId().equals(requestingUserId);
+        boolean isOwner = this.owner.getId().equals(requestingUserId);
+        if (!isSelf && !isOwner) {
+            throw new ProjectAccessDeniedException("Only owner or member themselves can remove a member");
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        ProjectMemberStatus newStatus = isSelf ? ProjectMemberStatus.LEFT : ProjectMemberStatus.REMOVED;
+        List<ProjectMember> updated = safeMembers().stream()
+                .map(member -> member.getId().equals(memberId)
+                        ? member.withStatus(newStatus).withLeftAt(now)
+                        : member)
+                .toList();
+        return Project.builder()
+                .from(this)
+                .members(updated)
+                .updatedAt(now)
+                .build();
+    }
+
+    /**
+     * Updates participant status. Only project owner may review membership requests.
+     */
+    public Project updateMemberStatus(UUID memberId, ProjectMemberStatus newStatus, UUID requestingUserId) {
+        if (!this.owner.getId().equals(requestingUserId)) {
+            throw new ProjectAccessDeniedException(this.owner.getId(), requestingUserId);
+        }
+        if (newStatus == ProjectMemberStatus.OWNER) {
+            throw new InvalidProjectStatusException("Cannot assign OWNER status through membership flow");
+        }
+
+        ProjectMember target = findMemberById(memberId);
+        if (target.getStatus() == ProjectMemberStatus.OWNER) {
+            throw new ProjectAccessDeniedException("Owner status cannot be changed");
+        }
+
+        OffsetDateTime now = OffsetDateTime.now();
+        List<ProjectMember> updated = safeMembers().stream()
+                .map(member -> member.getId().equals(memberId)
+                        ? applyStatus(member, newStatus, now)
+                        : member)
+                .toList();
+        return Project.builder()
+                .from(this)
+                .members(updated)
+                .updatedAt(now)
+                .build();
+    }
+
+    public ProjectMember findMemberById(UUID memberId) {
+        return safeMembers().stream()
+                .filter(member -> member.getId().equals(memberId))
+                .findFirst()
+                .orElseThrow(() -> new ProjectMemberNotFoundException(this.id, memberId));
+    }
+
+    private List<ProjectMember> safeMembers() {
+        return members == null ? List.of() : members;
+    }
+
+    private ProjectMember applyStatus(ProjectMember member, ProjectMemberStatus status, OffsetDateTime when) {
+        ProjectMember updated = member.withStatus(status);
+        if (status == ProjectMemberStatus.LEFT || status == ProjectMemberStatus.REMOVED) {
+            return updated.withLeftAt(when);
+        }
+        return updated;
     }
 }

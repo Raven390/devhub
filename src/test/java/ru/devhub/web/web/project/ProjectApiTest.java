@@ -11,7 +11,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.devhub.web.application.project.assembler.ProjectAssembler;
 import ru.devhub.web.application.project.command.create.CreateProjectCommandHandler;
+import ru.devhub.web.application.project.command.join.JoinProjectCommandHandler;
+import ru.devhub.web.application.project.command.removemember.RemoveMemberCommandHandler;
 import ru.devhub.web.application.project.command.update.UpdateProjectCommandHandler;
+import ru.devhub.web.application.project.command.updatememberstatus.UpdateMemberStatusCommandHandler;
 import ru.devhub.web.application.project.query.get.GetProjectQueryHandler;
 import ru.devhub.web.application.project.query.list.ListProjectsQueryHandler;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectMemberRepository;
@@ -87,12 +90,21 @@ class ProjectApiTest {
         }
 
         @Bean
-        public ProjectAssembler aggregateAssembler(InMemoryUserRepository userRepository, InMemoryProjectTypeRepository typeRepository) {
-            var technologyRepository = new InMemoryTechnologyRepository();
-            var roleRepository = new InMemoryRoleRepository();
-            var projectMemberRepository = new InMemoryProjectMemberRepository();
+        public InMemoryTechnologyRepository technologyRepository() {
+            return new InMemoryTechnologyRepository();
+        }
 
-            // Создаём assembler с зависимостями
+        @Bean
+        public InMemoryRoleRepository roleRepository() {
+            return new InMemoryRoleRepository();
+        }
+
+        @Bean
+        public ProjectAssembler aggregateAssembler(InMemoryUserRepository userRepository,
+                                                  InMemoryProjectTypeRepository typeRepository,
+                                                  InMemoryTechnologyRepository technologyRepository,
+                                                  InMemoryRoleRepository roleRepository,
+                                                  InMemoryProjectMemberRepository projectMemberRepository) {
             return new ProjectAssembler(
                     userRepository, typeRepository, technologyRepository, roleRepository, projectMemberRepository
             );
@@ -131,6 +143,26 @@ class ProjectApiTest {
                                                                InMemoryProjectMemberRepository memberRepository,
                                                                InMemoryUserRepository userRepository) {
             return new UpdateProjectCommandHandler(projectRepository, aggregateAssembler, memberRepository, userRepository);
+        }
+
+        @Bean
+        public JoinProjectCommandHandler joinProjectService(InMemoryProjectRepository projectRepository,
+                                                           InMemoryProjectMemberRepository memberRepository,
+                                                           InMemoryUserRepository userRepository,
+                                                           InMemoryRoleRepository roleRepository) {
+            return new JoinProjectCommandHandler(projectRepository, memberRepository, userRepository, roleRepository);
+        }
+
+        @Bean
+        public RemoveMemberCommandHandler removeMemberService(InMemoryProjectRepository projectRepository,
+                                                             InMemoryProjectMemberRepository memberRepository) {
+            return new RemoveMemberCommandHandler(projectRepository, memberRepository);
+        }
+
+        @Bean
+        public UpdateMemberStatusCommandHandler updateMemberStatusService(InMemoryProjectRepository projectRepository,
+                                                                         InMemoryProjectMemberRepository memberRepository) {
+            return new UpdateMemberStatusCommandHandler(projectRepository, memberRepository);
         }
 
         @Bean
