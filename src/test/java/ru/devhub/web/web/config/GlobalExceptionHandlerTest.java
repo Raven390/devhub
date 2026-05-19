@@ -125,6 +125,18 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("422: InvalidProjectStatusException — ARCHIVED → ACTIVE")
+    void invalidProjectStatus_archivedToActive() throws Exception {
+        mvc.perform(get("/test/invalid-status"))
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.status").value(422))
+                .andExpect(jsonPath("$.error").value("Unprocessable Entity"))
+                .andExpect(jsonPath("$.message", containsString("ARCHIVED")))
+                .andExpect(jsonPath("$.message", containsString("ACTIVE")))
+                .andExpect(jsonPath("$.path").value("/test/invalid-status"));
+    }
+
+    @Test
     @DisplayName("Fallback 500: любой необработанный Exception")
     void fallbackException() throws Exception {
         mvc.perform(get("/test/fail"))

@@ -104,7 +104,7 @@ public class Project {
         this.roles = builder.roles;
         this.members = builder.members;
         this.createdAt = builder.createdAt;
-        this.updatedAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt != null ? builder.updatedAt : builder.createdAt;
     }
 
     public static class Builder {
@@ -136,6 +136,7 @@ public class Project {
             this.roles = existing.getRoles();
             this.members = existing.getMembers();
             this.createdAt = existing.getCreatedAt();
+            this.updatedAt = existing.getUpdatedAt();
             return this;
         }
 
@@ -184,20 +185,18 @@ public class Project {
             return this;
         }
 
+        public Builder updatedAt(OffsetDateTime updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
         public Project build() {
-            // Пример простых доменных инвариантов (можешь расширять)
             if (id == null) id = UUID.randomUUID();
             if (owner == null) throw new IllegalArgumentException("Owner is required");
             if (name == null || name.isBlank()) throw new IllegalArgumentException("Name is required");
-            if (createdAt == null && updatedAt == null) {
-                createdAt = OffsetDateTime.now();
-                updatedAt = createdAt;
-            }
-
-            if (updatedAt == null) {
-                updatedAt = OffsetDateTime.now();
-            }
-
+            OffsetDateTime now = OffsetDateTime.now();
+            if (createdAt == null) createdAt = now;
+            if (updatedAt == null) updatedAt = now;
             return new Project(this);
         }
     }

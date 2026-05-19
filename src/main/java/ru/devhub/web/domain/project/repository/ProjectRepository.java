@@ -1,5 +1,8 @@
 package ru.devhub.web.domain.project.repository;
 
+import ru.devhub.web.domain.project.model.Project;
+import ru.devhub.web.domain.project.model.ProjectPage;
+
 import java.util.Optional;
 import java.util.UUID;
 

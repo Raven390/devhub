@@ -103,4 +103,3 @@ public class ProjectPage {
         return size;
     }
 }
-

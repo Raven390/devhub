@@ -31,4 +31,3 @@ public class ProjectAccessDeniedException extends RuntimeException {
         super("Project access denied. OwnerId: %s, userId: %s".formatted(ownerId, userId));
     }
 }
-

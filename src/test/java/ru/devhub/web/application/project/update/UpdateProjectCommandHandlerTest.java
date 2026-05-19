@@ -2,7 +2,9 @@ package ru.devhub.web.application.project.update;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.devhub.web.application.project.ProjectAssembler;
+import ru.devhub.web.application.project.assembler.ProjectAssembler;
+import ru.devhub.web.application.project.command.update.UpdateProjectCommand;
+import ru.devhub.web.application.project.command.update.UpdateProjectCommandHandler;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectMemberRepository;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectRepository;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectTypeRepository;
@@ -61,7 +63,7 @@ public class UpdateProjectCommandHandlerTest {
         ProjectAssembler assembler = new ProjectAssembler(
                 userRepository, typeRepository, technologyRepository, roleRepository, projectMemberRepository
         );
-        service = new UpdateProjectCommandHandler(projectRepository, assembler, projectMemberRepository);
+        service = new UpdateProjectCommandHandler(projectRepository, assembler, projectMemberRepository, userRepository);
 
         owner = User.create("Nikita", "nikita@example.com", "Геймдев-разработчик");
         userRepository.save(owner);
@@ -86,7 +88,7 @@ public class UpdateProjectCommandHandlerTest {
                 .description("Initial desc")
                 .shortDescription("short")
                 .type(webType)
-                .status(ProjectStatus.DRAFT)
+                .status(ProjectStatus.RECRUITING)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole))
                 .members(List.of(firstMember))
@@ -185,7 +187,7 @@ public class UpdateProjectCommandHandlerTest {
                 .description("Initial")
                 .shortDescription("short")
                 .type(webType)
-                .status(ProjectStatus.DRAFT)
+                .status(ProjectStatus.RECRUITING)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole))
                 .members(List.of(ownerMember, alice))
@@ -225,7 +227,7 @@ public class UpdateProjectCommandHandlerTest {
                 .description("Initial")
                 .shortDescription("short")
                 .type(webType)
-                .status(ProjectStatus.DRAFT)
+                .status(ProjectStatus.RECRUITING)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole))
                 .members(List.of(ownerMember, bobMember))
@@ -268,7 +270,7 @@ public class UpdateProjectCommandHandlerTest {
                 .description("Initial")
                 .shortDescription("short")
                 .type(webType)
-                .status(ProjectStatus.DRAFT)
+                .status(ProjectStatus.RECRUITING)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole, qa))
                 .members(List.of(ownerMember, bobMember))
@@ -320,7 +322,7 @@ public class UpdateProjectCommandHandlerTest {
                 .description("Initial")
                 .shortDescription("short")
                 .type(webType)
-                .status(ProjectStatus.DRAFT)
+                .status(ProjectStatus.RECRUITING)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole, qa))
                 .members(List.of(ownerMember))
@@ -370,7 +372,7 @@ public class UpdateProjectCommandHandlerTest {
                 .description("Initial")
                 .shortDescription("short")
                 .type(webType)
-                .status(ProjectStatus.DRAFT)
+                .status(ProjectStatus.RECRUITING)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole, qa))
                 .members(List.of(ownerMember, bobMember))
@@ -421,7 +423,7 @@ public class UpdateProjectCommandHandlerTest {
                 .description("Initial")
                 .shortDescription("short")
                 .type(webType)
-                .status(ProjectStatus.DRAFT)
+                .status(ProjectStatus.RECRUITING)
                 .technologies(List.of(javaTech))
                 .roles(List.of(devRole, qa))
                 .members(List.of(ownerMember))

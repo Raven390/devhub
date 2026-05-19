@@ -6,15 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.devhub.web.application.common.CommandHandler;
 import ru.devhub.web.application.project.assembler.ProjectAssembler;
+import ru.devhub.web.domain.project.exception.InvalidProjectStatusException;
 import ru.devhub.web.domain.project.exception.ProjectAccessDeniedException;
 import ru.devhub.web.domain.project.exception.ProjectNotFoundException;
 import ru.devhub.web.domain.project.member.ProjectMember;
 import ru.devhub.web.domain.project.member.ProjectMemberStatus;
 import ru.devhub.web.domain.project.model.Project;
+import ru.devhub.web.domain.project.model.ProjectStatus;
 import ru.devhub.web.domain.project.repository.ProjectMemberRepository;
 import ru.devhub.web.domain.project.repository.ProjectRepository;
 import ru.devhub.web.domain.reference.project.role.Role;
 import ru.devhub.web.domain.user.User;
+import ru.devhub.web.domain.user.UserRepository;
+import ru.devhub.web.domain.user.exception.UserNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,15 +49,18 @@ public class UpdateProjectCommandHandler implements CommandHandler<UpdateProject
     private final ProjectRepository projectRepository;
     private final ProjectAssembler assembler;
     private final ProjectMemberRepository projectMemberRepository;
+    private final UserRepository userRepository;
 
     public UpdateProjectCommandHandler(
             ProjectRepository projectRepository,
             ProjectAssembler assembler,
-            ProjectMemberRepository projectMemberRepository
+            ProjectMemberRepository projectMemberRepository,
+            UserRepository userRepository
     ) {
         this.projectRepository = projectRepository;
         this.assembler = assembler;
         this.projectMemberRepository = projectMemberRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -67,6 +74,17 @@ public class UpdateProjectCommandHandler implements CommandHandler<UpdateProject
             throw new ProjectAccessDeniedException(ownerId, command.ownerId());
         }
 
+        if (command.status() != null) {
+            try {
+                ProjectStatus newStatus = ProjectStatus.valueOf(command.status().toUpperCase());
+                if (newStatus != existing.getStatus() && !existing.getStatus().canTransitionTo(newStatus)) {
+                    throw new InvalidProjectStatusException(existing.getStatus(), newStatus);
+                }
+            } catch (IllegalArgumentException e) {
+                throw new InvalidProjectStatusException("Unknown status: " + command.status());
+            }
+        }
+
         Project updated = assembler.updateAggregate(existing, command);
         UUID projectId = updated.getId();
 
@@ -75,7 +93,8 @@ public class UpdateProjectCommandHandler implements CommandHandler<UpdateProject
             // === 1) Входящие → доменные объекты ===
             List<ProjectMember> incoming = members.stream()
                     .map(m -> {
-                        User user = User.create(m.userId());
+                        User user = userRepository.findById(m.userId())
+                                .orElseThrow(() -> new UserNotFoundException(m.userId()));
                         List<Role> roles = dedupeRoles(m.roleId().stream().map(Role::create).toList());
                         return ProjectMember.create(projectId, user, roles, m.status());
                     })

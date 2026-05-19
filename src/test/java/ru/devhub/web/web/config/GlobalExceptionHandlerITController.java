@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.devhub.web.domain.project.exception.InvalidProjectStatusException;
+import ru.devhub.web.domain.project.model.ProjectStatus;
 import ru.devhub.web.domain.user.exception.UserAlreadyExistsException;
 import ru.devhub.web.domain.user.exception.UserRegistrationException;
 
@@ -39,6 +41,11 @@ class GlobalExceptionHandlerITController {
 
     @GetMapping("/user-registration-error")
     public String userRegistrationError() { throw new UserRegistrationException("Registration failed"); }
+
+    @GetMapping("/invalid-status")
+    public String invalidStatus() {
+        throw new InvalidProjectStatusException(ProjectStatus.ARCHIVED, ProjectStatus.ACTIVE);
+    }
 
     @GetMapping("/fail")
     public String fail() { throw new RuntimeException("boom"); }

@@ -20,6 +20,7 @@ import ru.devhub.web.domain.user.User;
 import ru.devhub.web.domain.user.UserRepository;
 import ru.devhub.web.domain.user.exception.UserNotFoundException;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -130,6 +131,7 @@ public class ProjectAssembler {
                 .technologies(technologies)
                 .roles(roles)
                 .members(existing.getMembers())
+                .updatedAt(OffsetDateTime.now())
                 .build();
     }
 

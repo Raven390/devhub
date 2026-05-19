@@ -5,4 +5,3 @@ package ru.devhub.web.application.common;
  * Используется для унификации и возможной обработки на инфраструктурном уровне.
  */
 public interface Command {}
-
