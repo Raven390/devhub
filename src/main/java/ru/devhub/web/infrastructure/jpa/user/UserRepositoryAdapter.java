@@ -86,4 +86,9 @@ public class UserRepositoryAdapter implements UserRepository {
                 .map(userJpaMapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public long count() {
+        return jpaUserRepository.count();
+    }
 }

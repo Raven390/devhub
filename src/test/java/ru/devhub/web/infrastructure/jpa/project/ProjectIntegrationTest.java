@@ -71,7 +71,7 @@ class ProjectIntegrationTest {
     @DisplayName("Liquibase migration applies cleanly and project can be created and retrieved")
     void createAndRetrieveProject_smoke() throws Exception {
         UUID userId = UUID.randomUUID();
-        UserJpaEntity user = new UserJpaEntity(userId, "Smoke User", "smoke@example.com", "Tester");
+        UserJpaEntity user = new UserJpaEntity(); user.setId(userId); user.setName("Smoke User"); user.setEmail("smoke@example.com"); user.setHeadline("Tester");
         user.setCreatedAt(OffsetDateTime.now());
         user.setUpdatedAt(OffsetDateTime.now());
         userJpaRepository.save(user);

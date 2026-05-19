@@ -22,6 +22,6 @@ public class ListProjectsQueryHandler implements QueryHandler<ListProjectsQuery,
     @Override
     @Transactional(readOnly = true)
     public ProjectPage handle(ListProjectsQuery query) {
-        return projectRepository.findPage(query.page(), query.size());
+        return projectRepository.findPage(query);
     }
 }

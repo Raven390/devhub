@@ -196,21 +196,21 @@ class ProjectRepositoryAdapterTest {
         ProjectJpaEntity e2 = mock(ProjectJpaEntity.class);
 
         var springPage = new PageImpl<>(List.of(e1, e2), PageRequest.of(page, size), 10);
-        when(jpaRepository.findAll(PageRequest.of(page, size))).thenReturn(springPage);
+        when(jpaRepository.findAll(org.mockito.ArgumentMatchers.any(org.springframework.data.jpa.domain.Specification.class), org.mockito.ArgumentMatchers.eq(PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))))).thenReturn(springPage);
 
         Project d1 = Project.builder().from(newDomainProject()).id(UUID.randomUUID()).build();
         Project d2 = Project.builder().from(newDomainProject()).id(UUID.randomUUID()).build();
         when(mapper.toDomain(e1)).thenReturn(d1);
         when(mapper.toDomain(e2)).thenReturn(d2);
 
-        ProjectPage result = adapter.findPage(page, size);
+        ProjectPage result = adapter.findPage(new ru.devhub.web.application.project.query.list.ListProjectsQuery(page, size, null, java.util.List.of(), java.util.List.of(), null, null, null));
 
         assertThat(result.getProjects()).containsExactly(d1, d2);
         assertThat(result.getTotal()).isEqualTo(10);
         assertThat(result.getPage()).isEqualTo(page);
         assertThat(result.getSize()).isEqualTo(size);
 
-        verify(jpaRepository).findAll(PageRequest.of(page, size));
+        verify(jpaRepository).findAll(org.mockito.ArgumentMatchers.any(org.springframework.data.jpa.domain.Specification.class), org.mockito.ArgumentMatchers.eq(PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"))));
         verify(mapper).toDomain(e1);
         verify(mapper).toDomain(e2);
     }

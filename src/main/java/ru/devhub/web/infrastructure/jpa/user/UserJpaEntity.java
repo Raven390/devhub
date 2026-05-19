@@ -60,7 +60,7 @@ public class UserJpaEntity {
     @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
-    protected UserJpaEntity() {}
+    public UserJpaEntity() {}
 
     public UUID getId()                              { return id; }
     public void setId(UUID id)                       { this.id = id; }

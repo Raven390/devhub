@@ -31,4 +31,9 @@ public class InMemoryUserRepository extends BaseInMemoryRepository<User, UUID> i
     public List<User> searchByNameOrEmail(String query, int limit) {
         return List.of();
     }
+
+    @Override
+    public long count() {
+        return store.size();
+    }
 }

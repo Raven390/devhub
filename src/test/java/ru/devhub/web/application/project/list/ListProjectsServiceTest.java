@@ -60,7 +60,7 @@ class ListProjectsQueryHandlerTest {
         repo.save(p2);
 
         // Страница 0, размер 10 — обе записи на первой странице
-        ListProjectsQuery command = new ListProjectsQuery(0, 10);
+        ListProjectsQuery command = new ListProjectsQuery(0, 10, null, List.of(), List.of(), null, null, null);
         ProjectPage page = service.handle(command);
 
         assertEquals(2, page.getProjects().size());
@@ -89,7 +89,7 @@ class ListProjectsQueryHandlerTest {
         }
 
         // Страница 1, размер 10 — это 2-я десятка (10-19)
-        ListProjectsQuery command = new ListProjectsQuery(1, 10);
+        ListProjectsQuery command = new ListProjectsQuery(1, 10, null, List.of(), List.of(), null, null, null);
         ProjectPage page = service.handle(command);
 
         assertEquals(10, page.getProjects().size());
@@ -117,7 +117,7 @@ class ListProjectsQueryHandlerTest {
         }
 
         // Страница 2, размер 10 — не должно быть записей
-        ListProjectsQuery command = new ListProjectsQuery(2, 10);
+        ListProjectsQuery command = new ListProjectsQuery(2, 10, null, List.of(), List.of(), null, null, null);
         ProjectPage page = service.handle(command);
 
         assertEquals(0, page.getProjects().size());
@@ -128,7 +128,7 @@ class ListProjectsQueryHandlerTest {
 
     @Test
     void returns_empty_page_when_no_projects() {
-        ListProjectsQuery command = new ListProjectsQuery(0, 10);
+        ListProjectsQuery command = new ListProjectsQuery(0, 10, null, List.of(), List.of(), null, null, null);
         ProjectPage page = service.handle(command);
 
         assertEquals(0, page.getProjects().size());
@@ -139,7 +139,7 @@ class ListProjectsQueryHandlerTest {
 
     @Test
     void throws_on_invalid_page_or_size() {
-        assertThrows(IllegalArgumentException.class, () -> new ListProjectsQuery(-1, 10));
-        assertThrows(IllegalArgumentException.class, () -> new ListProjectsQuery(0, 0));
+        assertThrows(IllegalArgumentException.class, () -> new ListProjectsQuery(-1, 10, null, List.of(), List.of(), null, null, null));
+        assertThrows(IllegalArgumentException.class, () -> new ListProjectsQuery(0, 0, null, List.of(), List.of(), null, null, null));
     }
 }

@@ -89,4 +89,6 @@ public interface UserRepository {
 
 
     List<User> searchByNameOrEmail(String query, int limit);
+
+    long count();
 }

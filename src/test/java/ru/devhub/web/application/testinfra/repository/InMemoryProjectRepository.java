@@ -38,16 +38,9 @@ public class InMemoryProjectRepository extends BaseInMemoryRepository<Project, U
             .thenComparing(Project::getId, Comparator.nullsLast(Comparator.naturalOrder()));
 
     @Override
-    public ProjectPage findPage(int page, int size) {
-        return findPageInternal(null, page, size);
+    public ProjectPage findPage(ru.devhub.web.application.project.query.list.ListProjectsQuery query) {
+        return findPageInternal(query.search(), query.page(), query.size());
     }
-
-    // ===== Если в интерфейсе есть метод поиска — раскомментируй @Override =====
-    // @Override
-    public ProjectPage findPage(String search, int page, int size) {
-        return findPageInternal(search, page, size);
-    }
-    // ========================================================================
 
     private ProjectPage findPageInternal(String search, int page, int size) {
         if (page < 0) throw new IllegalArgumentException("Page must be >= 0");
@@ -104,6 +97,20 @@ public class InMemoryProjectRepository extends BaseInMemoryRepository<Project, U
     @Override
     public synchronized void delete(UUID id) {
         super.delete(id);
+    }
+
+    @Override
+    public long countByStatusIn(List<ru.devhub.web.domain.project.model.ProjectStatus> statuses) {
+        return store.values().stream()
+            .filter(p -> statuses.contains(p.getStatus()))
+            .count();
+    }
+
+    @Override
+    public long countByStatus(ru.devhub.web.domain.project.model.ProjectStatus status) {
+        return store.values().stream()
+            .filter(p -> p.getStatus() == status)
+            .count();
     }
 
     public synchronized void deleteAll(Collection<Project> entities) {

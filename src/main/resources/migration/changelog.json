@@ -2,12 +2,17 @@
   "databaseChangeLog": [
     {
       "include": {
-        "file": "/migration/V0.0.1/001_init.json"
+        "file": "migration/V0.0.1/001_init.json"
       }
     },
     {
       "include": {
-        "file": "/migration/V0.0.2/001_user_profile.json"
+        "file": "migration/V0.0.2/001_user_profile.json"
+      }
+    },
+    {
+      "include": {
+        "file": "migration/V0.0.3/001_project_indexes.json"
       }
     }
   ]

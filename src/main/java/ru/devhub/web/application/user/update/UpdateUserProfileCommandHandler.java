@@ -41,8 +41,7 @@ public class UpdateUserProfileCommandHandler {
         if (cmd.skillIds() != null && !cmd.skillIds().isEmpty()) {
             skills = technologyRepository.findAllById(cmd.skillIds());
             if (skills.size() != cmd.skillIds().size()) {
-                throw new IllegalArgumentException(
-                        "One or more skillIds are invalid: " + cmd.skillIds());
+                throw new ru.devhub.web.domain.reference.project.technology.exception.TechnologyNotFoundException(cmd.skillIds());
             }
         }
 
@@ -52,7 +51,7 @@ public class UpdateUserProfileCommandHandler {
                 .headline(cmd.headline() != null ? cmd.headline() : existing.getHeadline())
                 .bio(cmd.bio() != null ? cmd.bio() : existing.getBio())
                 .githubUrl(cmd.githubUrl() != null ? cmd.githubUrl() : existing.getGithubUrl())
-                .skills(skills.isEmpty() && (cmd.skillIds() == null) ? existing.getSkills() : skills)
+                .skills(cmd.skillIds() != null ? skills : existing.getSkills())
                 .updatedAt(OffsetDateTime.now())
                 .build();
 

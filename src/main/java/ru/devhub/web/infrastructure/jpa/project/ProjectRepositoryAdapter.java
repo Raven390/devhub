@@ -113,12 +113,41 @@ public class ProjectRepositoryAdapter implements ProjectRepository {
      * {@inheritDoc}
      */
     @Override
-    public ProjectPage findPage(int page, int size) {
-        var resultPage = jpaRepository.findAll(PageRequest.of(page, size));
+    public ProjectPage findPage(ru.devhub.web.application.project.query.list.ListProjectsQuery query) {
+        org.springframework.data.jpa.domain.Specification<ProjectJpaEntity> spec = org.springframework.data.jpa.domain.Specification.where(
+            ru.devhub.web.infrastructure.jpa.project.spec.ProjectSpecification.visibleTo(query.requestingUserId())
+        );
+
+        if (query.status() != null) {
+            spec = spec.and(ru.devhub.web.infrastructure.jpa.project.spec.ProjectSpecification.hasStatus(ru.devhub.web.infrastructure.jpa.project.model.ProjectStatusJpaEnum.valueOf(query.status().name())));
+        } else {
+            spec = spec.and(ru.devhub.web.infrastructure.jpa.project.spec.ProjectSpecification.defaultVisible());
+        }
+
+        if (query.technologyIds() != null && !query.technologyIds().isEmpty()) {
+            spec = spec.and(ru.devhub.web.infrastructure.jpa.project.spec.ProjectSpecification.hasTechnology(query.technologyIds()));
+        }
+
+        if (query.roleIds() != null && !query.roleIds().isEmpty()) {
+            spec = spec.and(ru.devhub.web.infrastructure.jpa.project.spec.ProjectSpecification.hasRole(query.roleIds()));
+        }
+
+        if (query.search() != null && !query.search().isBlank()) {
+            spec = spec.and(ru.devhub.web.infrastructure.jpa.project.spec.ProjectSpecification.nameOrDescriptionContains(query.search()));
+        }
+
+        if (query.ownerId() != null) {
+            spec = spec.and(ru.devhub.web.infrastructure.jpa.project.spec.ProjectSpecification.hasOwner(query.ownerId()));
+        }
+
+        org.springframework.data.domain.Pageable pageable = PageRequest.of(query.page(), query.size(),
+            org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+
+        var resultPage = jpaRepository.findAll(spec, pageable);
         List<Project> projects = resultPage.getContent().stream()
                 .map(projectJpaMapper::toDomain)
                 .toList();
-        return ProjectPage.create(projects, resultPage.getTotalElements(), page, size);
+        return ProjectPage.create(projects, resultPage.getTotalElements(), query.page(), query.size());
     }
 
     /**
@@ -127,5 +156,19 @@ public class ProjectRepositoryAdapter implements ProjectRepository {
     @Override
     public void delete(UUID id) {
         jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public long countByStatusIn(List<ru.devhub.web.domain.project.model.ProjectStatus> statuses) {
+        return jpaRepository.countByStatusIn(
+            statuses.stream()
+                .map(s -> ru.devhub.web.infrastructure.jpa.project.model.ProjectStatusJpaEnum.valueOf(s.name()))
+                .toList()
+        );
+    }
+
+    @Override
+    public long countByStatus(ru.devhub.web.domain.project.model.ProjectStatus status) {
+        return jpaRepository.countByStatus(ru.devhub.web.infrastructure.jpa.project.model.ProjectStatusJpaEnum.valueOf(status.name()));
     }
 }
