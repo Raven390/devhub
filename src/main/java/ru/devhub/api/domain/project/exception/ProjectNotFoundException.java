@@ -1,6 +1,6 @@
 package ru.devhub.api.domain.project.exception;
 
-import ru.devhub.api.application.project.update.UpdateProjectService;
+import ru.devhub.api.application.project.assembler.UpdateProjectService;
 
 import java.util.UUID;
 
