@@ -176,7 +176,8 @@ public interface ProjectWebMapper {
         if (members == null) return List.of();
         return members.stream()
                 .map(ProjectMember::getUser)
-                .map(user -> new UserDto(user.getId(), user.getEmail(), user.getName()))
+                .map(user -> new UserDto(user.getId(), user.getEmail(), user.getName(),
+                        user.getHeadline(), user.getAvatarUrl()))
                 .toList();
     }
 }

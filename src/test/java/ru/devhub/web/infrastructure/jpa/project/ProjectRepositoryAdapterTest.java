@@ -60,7 +60,8 @@ class ProjectRepositoryAdapterTest {
 
     private User userWithId(UUID id) {
         OffsetDateTime now = OffsetDateTime.now();
-        return User.create(id, "User " + id, id + "@example.com", "headline", now, now);
+        return User.restore(id, "User " + id, id + "@example.com", "headline",
+                null, null, null, List.of(), now, now);
     }
 
     @Test

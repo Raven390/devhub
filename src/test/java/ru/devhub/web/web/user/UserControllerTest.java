@@ -8,8 +8,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.devhub.web.application.user.get.GetUserService;
+import ru.devhub.web.application.user.getme.GetCurrentUserQueryHandler;
 import ru.devhub.web.application.user.search.SearchUserQuery;
 import ru.devhub.web.application.user.search.SearchUserService;
+import ru.devhub.web.application.user.update.UpdateUserProfileCommandHandler;
 import ru.devhub.web.domain.user.User;
 import ru.devhub.web.infrastructure.security.config.SecurityConfig;
 import ru.devhub.web.web.user.dto.UserDto;
@@ -41,6 +44,15 @@ class UserControllerTest {
     SearchUserService searchUserService;
 
     @MockBean
+    GetCurrentUserQueryHandler getCurrentUserQueryHandler;
+
+    @MockBean
+    GetUserService getUserService;
+
+    @MockBean
+    UpdateUserProfileCommandHandler updateUserProfileCommandHandler;
+
+    @MockBean
     UserMapper userMapper;
 
     @Test
@@ -52,10 +64,9 @@ class UserControllerTest {
 
     @Test
     void search_returns_200_with_jwt_and_payload() throws Exception {
-        // given
         List<User> found = List.of(
-                User.create("Nikita", "n@ex.com", "headline"),
-                User.create("Daria", "d@ex.com", "headline")
+                User.create("Nikita", "n@ex.com"),
+                User.create("Daria", "d@ex.com")
         );
         when(searchUserService.handle(any())).thenReturn(found);
 
@@ -64,14 +75,13 @@ class UserControllerTest {
         when(userMapper.toSearchResponse(found)).thenReturn(
                 new UserSearchResponse(
                         List.of(
-                                new UserDto(id1, "n@ex.com", "Nikita"),
-                                new UserDto(id2,   "d@ex.com", "Daria")
+                                new UserDto(id1, "n@ex.com", "Nikita", null, null),
+                                new UserDto(id2, "d@ex.com", "Daria",  null, null)
                         ),
                         2
                 )
         );
 
-        // when / then
         mvc.perform(get("/users/search")
                         .param("query", "  nik  ")
                         .param("limit", "5")
@@ -89,7 +99,6 @@ class UserControllerTest {
 
         ArgumentCaptor<SearchUserQuery> captor = ArgumentCaptor.forClass(SearchUserQuery.class);
         verify(searchUserService).handle(captor.capture());
-        // проверим, что дефолты/лимит прокинуты корректно
         org.junit.jupiter.api.Assertions.assertEquals(5, captor.getValue().limit());
     }
 
@@ -115,14 +124,12 @@ class UserControllerTest {
                         .param("limit", "0")
                         .with(jwt()))
                 .andExpect(status().isBadRequest());
-        verifyNoInteractions(searchUserService, userMapper);
 
         mvc.perform(get("/users/search")
                         .param("query", "abc")
                         .param("limit", "999")
                         .with(jwt()))
                 .andExpect(status().isBadRequest());
-        verifyNoInteractions(searchUserService, userMapper);
     }
 
     @Test

@@ -1,0 +1,21 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "V0.0.2",
+        "author": "nikita.potapov@develonica.ru",
+        "changes": [
+          {
+            "sqlFile": {
+              "splitStatements": false,
+              "path": "migration/V0.0.2/001_user_profile.sql"
+            }
+          }
+        ],
+        "rollback": {
+          "sql": "ALTER TABLE devhub.users DROP COLUMN IF EXISTS avatar_url; ALTER TABLE devhub.users DROP COLUMN IF EXISTS bio; ALTER TABLE devhub.users DROP COLUMN IF EXISTS github_url; DROP TABLE IF EXISTS devhub.user_technology;"
+        }
+      }
+    }
+  ]
+}
