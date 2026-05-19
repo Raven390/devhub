@@ -1,0 +1,6 @@
+package ru.devhub.web.web.user.dto;
+
+import java.util.UUID;
+
+public record UserDto(UUID id, String email, String name) {
+}

@@ -23,16 +23,16 @@ management:
       enabled: true
 spring:
   application:
-    name: gamehub-web
+    name: DevHub-web
   liquibase:
     change-log: migration/changelog.json
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5435/gamehub}
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5435/DevHub}
     user: ${DATASOURCE_USERNAME:postgres}
     password: ${DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5435/gamehub}
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5435/DevHub}
     username: ${DATASOURCE_USERNAME:postgres}
     password: ${DATASOURCE_PASSWORD:postgres}
     hikari:
@@ -44,7 +44,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${KEYCLOAK_REALM_CERT_URL:http://localhost:80/realms/gamehub/protocol/openid-connect/certs}
+          jwk-set-uri: ${KEYCLOAK_REALM_CERT_URL:http://localhost:80/realms/DevHub/protocol/openid-connect/certs}
 
   jackson:
     deserialization:
@@ -52,7 +52,7 @@ spring:
 
 keycloak:
   url: http://localhost:80
-  realm: gamehub
+  realm: DevHub
   client-id: admin-cli
   username: admin
   password: admin
