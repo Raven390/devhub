@@ -31,5 +31,10 @@ COMMENT ON TABLE devhub.user_technology IS 'Навыки пользовател�
 -- Backfill avatar_url for existing users using Gravatar
 -- MD5 hash is computed in Java at registration time; existing rows remain NULL
 -- (they will be populated on first PUT /users/me or re-login)
+UPDATE devhub.users
+SET avatar_url = 'https://www.gravatar.com/avatar/' ||
+    md5(lower(trim(email))) ||
+    '?d=identicon&s=200'
+WHERE avatar_url IS NULL;
 
 COMMIT;

@@ -30,11 +30,9 @@ public interface ProjectRepository {
     Optional<Project> findById(UUID id);
 
     /**
-     * Возвращает все проекты из хранилища.
-     *
-     * @return список всех проектов
+     * Возвращает страницу проектов с учетом фильтрации.
      */
-    ProjectPage findPage(int page, int size);
+    ProjectPage findPage(ru.devhub.web.application.project.query.list.ListProjectsQuery query);
 
     /**
      * Удаляет проект по его идентификатору.
@@ -42,4 +40,8 @@ public interface ProjectRepository {
      * @param id идентификатор удаляемого проекта
      */
     void delete(UUID id);
+
+    long countByStatusIn(java.util.List<ru.devhub.web.domain.project.model.ProjectStatus> statuses);
+
+    long countByStatus(ru.devhub.web.domain.project.model.ProjectStatus status);
 }

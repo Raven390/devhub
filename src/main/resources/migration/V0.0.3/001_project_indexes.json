@@ -1,0 +1,18 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "001-project-indexes",
+        "author": "Raven390",
+        "changes": [
+          {
+            "sqlFile": {
+              "path": "001_project_indexes.sql",
+              "relativeToChangelogFile": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

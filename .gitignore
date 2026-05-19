@@ -25,3 +25,4 @@ replay_pid*
 software/pg_data
 software/opensearch_data
 software/keyckloak_data
+target/

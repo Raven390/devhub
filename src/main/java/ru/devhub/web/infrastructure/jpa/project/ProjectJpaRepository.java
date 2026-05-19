@@ -1,6 +1,7 @@
 package ru.devhub.web.infrastructure.jpa.project;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import ru.devhub.web.infrastructure.jpa.project.model.ProjectJpaEntity;
 
@@ -30,6 +31,8 @@ import java.util.UUID;
  * @see org.springframework.data.jpa.repository.JpaRepository
  */
 @Repository
-public interface ProjectJpaRepository extends JpaRepository<ProjectJpaEntity, UUID> {
+public interface ProjectJpaRepository extends JpaRepository<ProjectJpaEntity, UUID>, JpaSpecificationExecutor<ProjectJpaEntity> {
+    long countByStatusIn(java.util.List<ru.devhub.web.infrastructure.jpa.project.model.ProjectStatusJpaEnum> statuses);
+    long countByStatus(ru.devhub.web.infrastructure.jpa.project.model.ProjectStatusJpaEnum status);
 }
 

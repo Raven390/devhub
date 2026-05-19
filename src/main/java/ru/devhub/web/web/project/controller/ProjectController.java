@@ -123,16 +123,40 @@ public class ProjectController {
     }
 
     /**
-     * GET /projects — список проектов с пагинацией.
+     * GET /projects — список проектов с пагинацией и фильтрацией.
      */
     @GetMapping
     public ResponseEntity<ListProjectResponse> list(
-            @AuthenticationPrincipal Jwt principal,
-            @ModelAttribute ListProjectRequest request
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "20") int size,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) ru.devhub.web.domain.project.model.ProjectStatus status,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) java.util.List<Integer> technologyIds,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) java.util.List<Integer> roleIds,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String search,
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String ownerId,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        ListProjectsQuery query = new ListProjectsQuery(request.page(), request.size());
-        ProjectPage page = listHandler.handle(query);
-        return ResponseEntity.ok(projectMapper.toListProjectResponse(page));
+        UUID requestingUserId = jwt != null && jwt.hasClaim("business_id")
+            ? UUID.fromString(jwt.getClaimAsString("business_id"))
+            : null;
+
+        UUID ownerUUID = null;
+        if ("me".equals(ownerId) && requestingUserId != null) {
+            ownerUUID = requestingUserId;
+        } else if (ownerId != null) {
+            ownerUUID = UUID.fromString(ownerId);
+        }
+
+        ListProjectsQuery query = new ListProjectsQuery(
+            page, size, status,
+            technologyIds != null ? technologyIds : java.util.List.of(),
+            roleIds != null ? roleIds : java.util.List.of(),
+            search,
+            ownerUUID,
+            requestingUserId
+        );
+        ProjectPage resultPage = listHandler.handle(query);
+        return ResponseEntity.ok(projectMapper.toListProjectResponse(resultPage));
     }
 
     /**
