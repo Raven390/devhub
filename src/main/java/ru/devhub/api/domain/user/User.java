@@ -1,6 +1,6 @@
 package ru.devhub.api.domain.user;
 
-import ru.devhub.api.domain.project.Project;
+import ru.devhub.api.domain.project.model.Project;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;

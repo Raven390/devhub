@@ -1,0 +1,338 @@
+openapi: 3.0.3
+info:
+  title: DevHub API - Projects Context
+  version: 1.0.0
+  description: MVP contract for working with projects within the project-centric learning platform.
+servers:
+  - url: /
+paths:
+  /projects:
+    post:
+      summary: Create a new project
+      operationId: createProject
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project successfully created
+          headers:
+            Location:
+              description: Link to the created project
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProjectResponse'
+    get:
+      summary: Get a list of projects
+      operationId: listProjects
+      tags:
+        - Projects
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number
+        - in: query
+          name: size
+          schema:
+            type: integer
+          description: Page size
+      responses:
+        '200':
+          description: List of projects with pagination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListProjectResponse'
+  /projects/{id}:
+    get:
+      summary: Get project details
+      operationId: getProject
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProjectResponse'
+        '404':
+          description: Project not found
+    put:
+      summary: Update project
+      operationId: updateProject
+      tags:
+        - Projects
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProjectRequest'
+      responses:
+        '200':
+          description: Project successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProjectResponse'
+        '404':
+          description: Project not found
+
+components:
+  schemas:
+    CreateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        shortDescription:
+          type: string
+        typeId:
+          type: string
+          format: uuid
+        status:
+          type: string
+        technologyIds:
+          type: array
+          items:
+            type: integer
+        roleIds:
+          type: array
+          items:
+            type: integer
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberDto'
+
+    UpdateProjectRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        shortDescription:
+          type: string
+        status:
+          type: string
+        typeId:
+          type: string
+          format: uuid
+        technologyIds:
+          type: array
+          items:
+            type: integer
+        roleIds:
+          type: array
+          items:
+            type: integer
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberDto'
+
+    CreateProjectResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        shortDescription:
+          type: string
+        status:
+          type: string
+        type:
+          $ref: '#/components/schemas/TypeDto'
+        owner:
+          $ref: '#/components/schemas/UserDto'
+        technologies:
+          type: array
+          items:
+            $ref: '#/components/schemas/TechnologyDto'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDto'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberDto'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    GetProjectResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shortDescription:
+          type: string
+        description:
+          type: string
+        owner:
+          $ref: '#/components/schemas/UserDto'
+        type:
+          $ref: '#/components/schemas/TypeDto'
+        status:
+          type: string
+        technologyNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/TechnologyDto'
+        roleNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDto'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberDto'
+        createdAt:
+          type: string
+          format: date-time
+
+    ListProjectResponse:
+      type: object
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectListItemDto'
+        total:
+          type: integer
+          format: int64
+        page:
+          type: integer
+        size:
+          type: integer
+
+    ProjectListItemDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        shortDescription:
+          type: string
+        owner:
+          $ref: '#/components/schemas/UserDto'
+        typeName:
+          $ref: '#/components/schemas/TypeDto'
+        status:
+          type: string
+        technologyNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/TechnologyDto'
+        roleNames:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDto'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserDto'
+        createdAt:
+          type: string
+          format: date-time
+
+    MemberDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/UserDto'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/RoleDto'
+        status:
+          type: string
+        joinedAt:
+          type: string
+          format: date-time
+        leftAt:
+          type: string
+          format: date-time
+
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        email:
+          type: string
+
+    TypeDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+
+    TechnologyDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    RoleDto:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string

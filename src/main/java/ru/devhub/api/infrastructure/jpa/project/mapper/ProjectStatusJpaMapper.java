@@ -3,7 +3,7 @@ package ru.devhub.api.infrastructure.jpa.project.mapper;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.ValueMapping;
-import ru.devhub.api.domain.project.ProjectStatus;
+import ru.devhub.api.domain.project.model.ProjectStatus;
 import ru.devhub.api.infrastructure.jpa.project.model.ProjectStatusJpaEnum;
 
 @Mapper(componentModel = "spring")

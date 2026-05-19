@@ -1,6 +1,6 @@
 package ru.devhub.api.web.project.dto.request;
 
-import ru.devhub.api.web.project.member.MemberDto;
+import ru.devhub.api.web.project.dto.MemberDto;
 
 import java.util.List;
 import java.util.UUID;

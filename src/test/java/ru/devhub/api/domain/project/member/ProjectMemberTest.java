@@ -2,6 +2,8 @@ package ru.devhub.api.domain.project.member;
 
 import org.junit.jupiter.api.Test;
 import ru.devhub.api.domain.reference.project.role.Role;
+import ru.devhub.api.domain.project.member.model.ProjectMember;
+import ru.devhub.api.domain.project.member.model.ProjectMemberStatus;
 import ru.devhub.api.domain.user.User;
 
 import java.time.OffsetDateTime;

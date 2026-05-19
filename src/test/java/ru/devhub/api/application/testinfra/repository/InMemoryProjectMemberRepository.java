@@ -1,7 +1,7 @@
 package ru.devhub.api.application.testinfra.repository;
 
-import ru.devhub.api.domain.project.member.ProjectMember;
-import ru.devhub.api.domain.project.member.ProjectMemberRepository;
+import ru.devhub.api.domain.project.member.model.ProjectMember;
+import ru.devhub.api.domain.project.member.repository.ProjectMemberRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;

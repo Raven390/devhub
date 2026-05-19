@@ -1,6 +1,6 @@
 package ru.devhub.api.web.project.dto.response;
 
-import ru.devhub.api.web.project.member.MemberDto;
+import ru.devhub.api.web.project.dto.MemberDto;
 import ru.devhub.api.web.reference.role.RoleDto;
 import ru.devhub.api.web.reference.technology.TechnologyDto;
 import ru.devhub.api.web.reference.type.TypeDto;
