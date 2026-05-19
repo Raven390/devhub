@@ -8,7 +8,6 @@ import ru.devhub.web.domain.project.member.ProjectMember;
 import ru.devhub.web.domain.project.member.ProjectMemberStatus;
 import ru.devhub.web.domain.project.model.Project;
 import ru.devhub.web.domain.project.model.ProjectPage;
-import ru.devhub.web.domain.user.User;
 import ru.devhub.web.web.project.dto.member.MemberRequestDto;
 import ru.devhub.web.web.project.dto.request.CreateProjectRequest;
 import ru.devhub.web.web.project.dto.request.UpdateProjectRequest;
@@ -18,6 +17,7 @@ import ru.devhub.web.web.project.dto.response.ProjectListItemDto;
 import ru.devhub.web.web.reference.role.RoleMapper;
 import ru.devhub.web.web.reference.technology.TechnologyMapper;
 import ru.devhub.web.web.reference.type.TypeMapper;
+import ru.devhub.web.web.user.dto.UserDto;
 import ru.devhub.web.web.user.mapper.UserMapper;
 
 import java.util.List;
@@ -172,8 +172,11 @@ public interface ProjectWebMapper {
      * Извлекает пользователей из участников — для облегчённого списка проектов.
      */
     @org.mapstruct.Named("membersToUsers")
-    default List<User> mapMembersToUsers(List<ProjectMember> members) {
+    default List<UserDto> mapMembersToUsers(List<ProjectMember> members) {
         if (members == null) return List.of();
-        return members.stream().map(ProjectMember::getUser).toList();
+        return members.stream()
+                .map(ProjectMember::getUser)
+                .map(user -> new UserDto(user.getId(), user.getEmail(), user.getName()))
+                .toList();
     }
 }

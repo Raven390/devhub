@@ -24,6 +24,7 @@ import ru.devhub.web.infrastructure.jpa.project.model.ProjectJpaEntity;
 import ru.devhub.web.infrastructure.jpa.reference.project.role.RoleJpaEntity;
 import ru.devhub.web.infrastructure.jpa.reference.project.technology.TechnologyJpaEntity;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,7 +46,7 @@ class ProjectRepositoryAdapterTest {
 
     /** helper: минимальный валидный доменный проект */
     private Project newDomainProject() {
-        User owner = User.create(UUID.randomUUID());
+        User owner = userWithId(UUID.randomUUID());
         ProjectType type = ProjectType.create(UUID.randomUUID(), "Web");
         return Project.builder()
                 .owner(owner)
@@ -55,6 +56,11 @@ class ProjectRepositoryAdapterTest {
                 .type(type)
                 .status(ProjectStatus.ACTIVE)
                 .build();
+    }
+
+    private User userWithId(UUID id) {
+        OffsetDateTime now = OffsetDateTime.now();
+        return User.create(id, "User " + id, id + "@example.com", "headline", now, now);
     }
 
     @Test
@@ -130,10 +136,10 @@ class ProjectRepositoryAdapterTest {
                 .members(List.of(
                         // user/roles/status не важны для адаптера в этом месте
                         ProjectMember.create(
-                                m1, UUID.randomUUID(), User.create(UUID.randomUUID()), List.of(), ProjectMemberStatus.ACTIVE, null, null
+                                m1, UUID.randomUUID(), userWithId(UUID.randomUUID()), List.of(), ProjectMemberStatus.ACTIVE, null, null
                         ),
                         ProjectMember.create(
-                                m2, UUID.randomUUID(), User.create(UUID.randomUUID()), List.of(), ProjectMemberStatus.ACTIVE, null, null
+                                m2, UUID.randomUUID(), userWithId(UUID.randomUUID()), List.of(), ProjectMemberStatus.ACTIVE, null, null
                         )
                 ))
                 .build();

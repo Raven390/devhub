@@ -2,7 +2,9 @@ package ru.devhub.web.application.project.create;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.devhub.web.application.project.ProjectAssembler;
+import ru.devhub.web.application.project.assembler.ProjectAssembler;
+import ru.devhub.web.application.project.command.create.CreateProjectCommand;
+import ru.devhub.web.application.project.command.create.CreateProjectCommandHandler;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectMemberRepository;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectRepository;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectTypeRepository;
@@ -31,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CreateProjectCommandHandlerTest {
+class CreateProjectCommandHandlerTest {
 
     private ProjectRepository projectRepository;
     private UserRepository userRepository;
@@ -60,7 +62,7 @@ public class CreateProjectCommandHandlerTest {
         ProjectAssembler assembler = new ProjectAssembler(
                 userRepository, typeRepository, technologyRepository, roleRepository, projectMemberRepository
         );
-        service = new CreateProjectCommandHandler(projectRepository, assembler, projectMemberRepository);
+        service = new CreateProjectCommandHandler(projectRepository, assembler, projectMemberRepository, userRepository);
 
         owner = User.create("Nikita", "nikita@example.com", "Геймдев-разработчик");
         userRepository.save(owner);
@@ -196,6 +198,9 @@ public class CreateProjectCommandHandlerTest {
                 .filter(pm -> pm.getUser().getId().equals(owner.getId()))
                 .findFirst().orElseThrow();
         assertEquals(ProjectMemberStatus.OWNER, ownerMember.getStatus());
+        assertEquals(owner.getName(), ownerMember.getUser().getName());
+        assertEquals(owner.getEmail(), ownerMember.getUser().getEmail());
+        assertEquals(owner.getHeadline(), ownerMember.getUser().getHeadline());
         assertEquals(1, ownerMember.getRoles().size());
         assertEquals(devRole.getId(), ownerMember.getRoles().get(0).getId());
 
@@ -204,6 +209,9 @@ public class CreateProjectCommandHandlerTest {
                 .filter(pm -> pm.getUser().getId().equals(bob.getId()))
                 .findFirst().orElseThrow();
         assertEquals(ProjectMemberStatus.ACTIVE, bobMember.getStatus());
+        assertEquals(bob.getName(), bobMember.getUser().getName());
+        assertEquals(bob.getEmail(), bobMember.getUser().getEmail());
+        assertEquals(bob.getHeadline(), bobMember.getUser().getHeadline());
         assertEquals(List.of(qaRole.getId(), devRole.getId()),
                 bobMember.getRoles().stream().map(Role::getId).toList());
     }

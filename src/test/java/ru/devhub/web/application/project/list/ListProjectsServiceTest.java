@@ -2,6 +2,8 @@ package ru.devhub.web.application.project.list;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.devhub.web.application.project.query.list.ListProjectsQuery;
+import ru.devhub.web.application.project.query.list.ListProjectsQueryHandler;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectRepository;
 import ru.devhub.web.domain.project.model.Project;
 import ru.devhub.web.domain.project.model.ProjectPage;
@@ -15,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ListProjectsQueryHandlerTest {
+class ListProjectsQueryHandlerTest {
 
     private InMemoryProjectRepository repo;
     private ListProjectsQueryHandler service;

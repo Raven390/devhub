@@ -22,7 +22,9 @@ public class InMemoryUserRepository extends BaseInMemoryRepository<User, UUID> i
 
     @Override
     public List<User> findAllById(List<UUID> userIdList) {
-        return List.of();
+        return store.values().stream()
+                .filter(user -> userIdList.contains(user.getId()))
+                .toList();
     }
 
     @Override

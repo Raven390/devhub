@@ -10,9 +10,14 @@ import ru.devhub.web.domain.project.repository.ProjectMemberRepository;
 import ru.devhub.web.domain.project.repository.ProjectRepository;
 import ru.devhub.web.domain.reference.project.role.Role;
 import ru.devhub.web.domain.user.User;
+import ru.devhub.web.domain.user.UserRepository;
+import ru.devhub.web.domain.user.exception.UserNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Обработчик команды {@link CreateProjectCommand}.
@@ -27,15 +32,18 @@ public class CreateProjectCommandHandler implements CommandHandler<CreateProject
     private final ProjectRepository projectRepository;
     private final ProjectAssembler projectAssembler;
     private final ProjectMemberRepository projectMemberRepository;
+    private final UserRepository userRepository;
 
     public CreateProjectCommandHandler(
             ProjectRepository projectRepository,
             ProjectAssembler projectAssembler,
-            ProjectMemberRepository projectMemberRepository
+            ProjectMemberRepository projectMemberRepository,
+            UserRepository userRepository
     ) {
         this.projectRepository = projectRepository;
         this.projectAssembler = projectAssembler;
         this.projectMemberRepository = projectMemberRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -50,9 +58,19 @@ public class CreateProjectCommandHandler implements CommandHandler<CreateProject
         }
 
         UUID projectId = project.getId();
+        List<UUID> userIds = members.stream()
+                .map(CreateProjectCommand.Member::userId)
+                .distinct()
+                .toList();
+        Map<UUID, User> usersById = userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(User::getId, Function.identity()));
+
         List<ProjectMember> projectMemberList = members.stream()
                 .map(m -> {
-                    User user = User.create(m.userId());
+                    User user = usersById.get(m.userId());
+                    if (user == null) {
+                        throw new UserNotFoundException(m.userId());
+                    }
                     List<Role> roles = m.roleIds().stream().map(Role::create).toList();
                     return ProjectMember.create(projectId, user, roles, m.status());
                 })

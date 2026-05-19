@@ -9,11 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.devhub.web.application.project.ProjectAssembler;
+import ru.devhub.web.application.project.assembler.ProjectAssembler;
 import ru.devhub.web.application.project.command.create.CreateProjectCommandHandler;
 import ru.devhub.web.application.project.command.update.UpdateProjectCommandHandler;
-import ru.devhub.web.application.project.list.ListProjectsQueryHandler;
 import ru.devhub.web.application.project.query.get.GetProjectQueryHandler;
+import ru.devhub.web.application.project.query.list.ListProjectsQueryHandler;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectMemberRepository;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectRepository;
 import ru.devhub.web.application.testinfra.repository.InMemoryProjectTypeRepository;
@@ -23,9 +23,10 @@ import ru.devhub.web.application.testinfra.repository.InMemoryUserRepository;
 import ru.devhub.web.domain.reference.project.type.ProjectType;
 import ru.devhub.web.domain.user.User;
 import ru.devhub.web.infrastructure.security.config.SecurityConfig;
+import ru.devhub.web.web.project.controller.ProjectController;
 import ru.devhub.web.web.project.dto.request.CreateProjectRequest;
+import ru.devhub.web.web.project.mapper.MemberWebMapperImpl;
 import ru.devhub.web.web.project.mapper.ProjectWebMapperImpl;
-import ru.devhub.web.web.project.member.MemberMapperImpl;
 import ru.devhub.web.web.reference.role.RoleMapperImpl;
 import ru.devhub.web.web.reference.technology.TechnologyMapperImpl;
 import ru.devhub.web.web.reference.type.TypeMapperImpl;
@@ -47,7 +48,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 UserMapperImpl.class,
                 TypeMapperImpl.class,
                 TechnologyMapperImpl.class,
-                MemberMapperImpl.class,
+                MemberWebMapperImpl.class,
                 RoleMapperImpl.class,
                 SecurityConfig.class
         }
@@ -112,8 +113,11 @@ class ProjectApiTest {
         }
 
         @Bean
-        public CreateProjectCommandHandler createProjectService(InMemoryProjectRepository projectRepository, ProjectAssembler aggregateAssembler, InMemoryProjectMemberRepository memberRepository) {
-            return new CreateProjectCommandHandler(projectRepository, aggregateAssembler, memberRepository);
+        public CreateProjectCommandHandler createProjectService(InMemoryProjectRepository projectRepository,
+                                                               ProjectAssembler aggregateAssembler,
+                                                               InMemoryProjectMemberRepository memberRepository,
+                                                               InMemoryUserRepository userRepository) {
+            return new CreateProjectCommandHandler(projectRepository, aggregateAssembler, memberRepository, userRepository);
         }
 
         @Bean
@@ -122,8 +126,11 @@ class ProjectApiTest {
         }
 
         @Bean
-        public UpdateProjectCommandHandler updateProjectService(InMemoryProjectRepository projectRepository, ProjectAssembler aggregateAssembler, InMemoryProjectMemberRepository memberRepository) {
-            return new UpdateProjectCommandHandler(projectRepository, aggregateAssembler, memberRepository);
+        public UpdateProjectCommandHandler updateProjectService(InMemoryProjectRepository projectRepository,
+                                                               ProjectAssembler aggregateAssembler,
+                                                               InMemoryProjectMemberRepository memberRepository,
+                                                               InMemoryUserRepository userRepository) {
+            return new UpdateProjectCommandHandler(projectRepository, aggregateAssembler, memberRepository, userRepository);
         }
 
         @Bean
